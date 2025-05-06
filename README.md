@@ -1,1 +1,1 @@
-# sw-ling250-final
+# LING 250 — Final Project
