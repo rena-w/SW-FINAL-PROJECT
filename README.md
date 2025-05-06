@@ -1,5 +1,7 @@
 # LING 250 — Final Project
-## by Serena Wong
+### by Serena Wong for LING 250 — Spring 2025
+
+##
 
 ### Topic: word choice in news headlines, dependent on word length in characters
 
@@ -11,6 +13,11 @@
 
 ## Data
 *Overview of the data you've used for this project. This should be pretty close to your data statement milestone. This is also where to provide summary statistics of the data.*
+
+#### **Determining outliers**
+- formula = Q1 - 3*IQR, Q3 - 3*IQR 
+    - the increased threshold for outliers is due to the very small IQR found from the data
+
 
 ## Methodology 
 *This is one of the most important sections. A scientific paper should provide enough information that another scientist would be able to replicate the results. You don't have to cover every single detail of how your code is implemented, etc, but you should minimally describe any processing you apply to the data, as well as the specific statistical tests you use. This section should also formalize your hypotheses. If you decide to create a Github repository (see extra-credit section), you may cite portions of the code where appropriate.*
