@@ -116,14 +116,6 @@ def make_pair(list_of_entries, first_term, second_term, split=True): # make pair
             paired_unsplit.append(clean_pair_b)
         return paired_unsplit
 
-def get_category(list, category): # find all (split HL, CAT) pairs and return list of only the split HL
-    collected = []
-    for tup in list:
-        if f'{category}' in tup[1]:
-            hl = tup[0]
-            collected.append(hl)
-    return collected
-
 def write_file(file, list_data, format): # writes data to another file
     with open(f'{file}', 'w') as outfile:
         if f'{format}' == 'tuples':
@@ -215,13 +207,58 @@ def make_entry(paired_HLs):
     write_file('entry_data.txt', summaries_clean, 'strings')
     return summaries_clean
 
-def look_for(entries_paired, target):
+def find(entries_paired, variable):
     captured = []
-    for entry in entries_paired:
-        if f'{target}' in entry[1]:
-            captured.append(entry)
+    if variable=='word':    
+        print('What word(s) are you looking for?')
+        target = input('Enter target word(s): ')
+        for entry in entries_paired:
+            if f'{target}' in entry[0]:
+                captured.append(entry)
+    if variable=='category':
+        print('What category are you looking for?')
+        category = input('Enter category: ')
+        for entry in entries_paired:
+            if f'{category}' in entry[1]:
+                captured.append(entry)
+    if variable == 'WC':
+        condition = input('X is (greater than > / less than < / equal to =) ')
+        if condition=='>':    
+            wc_limit = int(input('Enter number: '))
+            for entry in entries_paired:    
+                if entry[2] > wc_limit:
+                    captured.append(entry)
+        if condition=='<':
+            wc_lim = int(input('Enter number: '))
+            for entry in entries_paired:
+                if entry[2] < wc_lim:
+                    captured.append(entry)
+        if condition=='=':
+            wc_li = int(input('Enter number: '))
+            for entry in entries_paired:    
+                if entry[2] == wc_li:
+                    captured.append(entry)
+    if variable=='CL':
+        print()
+        cond = input('X is (greater than > / less than < / equal to =) ?')
+        if cond=='>':    
+            cl_limit = int(input('Enter number: '))
+            for entry in entries_paired:
+                if entry[3] > cl_limit:
+                    captured.append(entry)
+        if cond=='<':
+            cl_lim = int(input('Enter number: '))
+            for entry in entries_paired:
+                if entry[3] < cl_lim:
+                    captured.append(entry)
+        if cond=='=':
+            cl_li = int(input('Enter number: '))
+            for entry in entries_paired:
+                if entry[3] == cl_li:
+                    captured.append(entry)
     if len(captured) != 0:
-        print(f'"{target}" found!')        
+        print('Found!')        
+        write_file(f'{variable}_search_results.txt', captured, 'strings')
         return captured
     else: 
         print('Nothing found!')
@@ -232,16 +269,15 @@ raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DAT
 links = find_type(raw_data, '$A')
 
 headlines = find_type(raw_data, '$B')
-write_file('HL.txt', headlines, 'strings')
+#write_file('HL.txt', headlines, 'strings')
 HLwords = combine(headlines) # all words in all headlines
-write_file('HL_words', HLwords, 'single string')
+total_word_count = len(HLwords)
 writtenHL = find_type(raw_data, '$B', split=False)
-write_file('headlines_clean.txt', writtenHL, 'strings')
+#write_file('headlines_clean.txt', writtenHL, 'strings')
 
 categories_all = find_type(raw_data, '$C', split=False)
 categories = sorted(set(categories_all))
-write_file('categories.txt', categories, 'strings')
-write_file('categories_all.txt', categories_all, 'strings')
+#write_file('categories.txt', categories, 'strings')
 #category_list = nltk.FreqDist(categories)
 #print(category_list.most_common(5))
 
@@ -250,13 +286,13 @@ authors = find_type(raw_data, '$E')
 dates = find_type(raw_data, '$F')
                 
 #### PAIRS ####
-categorized_headlines = make_pair(raw_data, '$B', '$C')
-write_file('categorized_HL.txt', categorized_headlines, 'strings')
+categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
 categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)  
-write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
+#write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
 
-entries = make_entry(categorized_headlines)
-politics_test = get_category(categorized_headlines, 'POLITICS')
+#all_entries = make_entry(categorized_headlines)
+#entries = find(all_entries, 'WC')
+politics_test = find(categorized_headlines, 'category')
 
 ## entries has: (headline, category, word count, character count)
 ### REGEX 
