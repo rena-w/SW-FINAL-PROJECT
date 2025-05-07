@@ -239,7 +239,7 @@ writtenHL = find_type(raw_data, '$B', split=False)
 write_file('headlines_clean.txt', writtenHL, 'strings')
 
 categories_all = find_type(raw_data, '$C', split=False)
-categories = set(categories_all)
+categories = sorted(set(categories_all))
 write_file('categories.txt', categories, 'strings')
 write_file('categories_all.txt', categories_all, 'strings')
 #category_list = nltk.FreqDist(categories)
@@ -254,22 +254,6 @@ categorized_headlines = make_pair(raw_data, '$B', '$C')
 write_file('categorized_HL.txt', categorized_headlines, 'strings')
 categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)  
 write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
-
-#### GENERAL DESC STATS ####
-#general_stats = get_gen_summary(headlines)
-# WC
-# mean: 9.699642528170594
-# median: 10.0
-# variance: 9.541723039156574
-# std dev: 3.088967956965008
-# range: 44
-
-# CL
-# mean: 5.111783666197601
-# median: 5.0
-# variance: 0.8486685158900964
-# std dev: 0.9212320640805423
-# range: 36.0
 
 entries = make_entry(categorized_headlines)
 politics_test = get_category(categorized_headlines, 'POLITICS')

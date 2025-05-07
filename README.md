@@ -14,6 +14,8 @@
 ## Data
 *Overview of the data you've used for this project. This should be pretty close to your data statement milestone. This is also where to provide summary statistics of the data.*
 
+- combined "ARTS", "ARTS & CULTURE", and "CULTURE & ARTS" into one category
+
 #### **Determining outliers**
 - formula = Q1 - 3*IQR, Q3 - 3*IQR 
     - the increased threshold for outliers is due to the very small IQR found from the data
