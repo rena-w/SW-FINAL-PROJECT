@@ -200,16 +200,7 @@ def find(entries_paired):
             captured_words = []
             for entry in entries_paired:
                 if f'{target}' in entry[0]: captured_words.append(entry)
-            if len(captured_words) != 0:
-                print('Found! Would you like to write to a file?')
-                answer = input('Y/N: ') 
-                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
-                    filename = input('Enter .txt file name: ')
-                    write_file(f'{filename}.txt', captured_words, 'strings')
-                    return captured_words
-                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
-                return captured_words
-            else: print('Nothing found!')
+            return captured_words
         if f'{search_choice}'=='category'or'CATEGORY'or'cat':
             print('What category are you looking for?')
             category = input('Enter category: ')
@@ -217,16 +208,7 @@ def find(entries_paired):
             for entry in entries_paired:
                 if f'{category}' in entry[1]:
                     captured_cat.append(entry)
-            if len(captured_cat) != 0:
-                print('Found! Would you like to write to a file?')
-                answer = input('Y/N: ') 
-                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
-                    filename = input('Enter .txt file name: ')
-                    write_file(f'{filename}.txt', captured_cat, 'strings')
-                    return captured_cat
-                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
-                return captured_cat
-            else: print('Nothing found!')
+            return captured_cat
         if f'{search_choice}' == 'WC'or'wc':
             captured_WC = []
             condition = input('WC is (greater than > / less than < / equal to =) ')
@@ -245,16 +227,7 @@ def find(entries_paired):
                 for entry in entries_paired:    
                     if entry[2] == wc_li:
                         captured_WC.append(entry)
-            if len(captured_WC) != 0:
-                print('Found! Would you like to write to a file?')
-                answer = input('Y/N: ') 
-                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
-                    filename = input('Enter .txt file name: ')
-                    write_file(f'{filename}.txt', captured_WC, 'strings')
-                    return captured_WC
-                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
-                return captured_WC
-            else: print('Nothing found!')
+            return captured_WC
         if f'{search_choice}'=='CL'or'cl':
             captured_CL = []
             cond = input('CL is (greater than > / less than < / equal to =) ')
@@ -273,18 +246,19 @@ def find(entries_paired):
                 for entry in entries_paired:
                     if entry[3] == cl_li:
                         captured_CL.append(entry)
-            if len(captured_CL) != 0:
-                print('Found! Would you like to write to a file?')
-                answer = input('Y/N: ') 
-                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
-                    filename = input('Enter .txt file name: ')
-                    write_file(f'{filename}.txt', captured_CL, 'strings')
-                    return captured_CL
-                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
-                return captured_CL
-            else: print('Nothing found!')
+            return captured_CL
     results = searching(search)
-    return results
+    if len(results) != 0:
+        print('Found! Would you like to write to a file?')
+        answer = input('Y/N: ') 
+        if f'{answer}'=='Y'or'yes'or'y'or'YES'or'Yes':
+            filename = input('Enter .txt file name: ')
+            write_file(f'{filename}.txt', results, 'strings')
+            return results
+        if f'{answer}'=='N'or'no'or'n'or'NO'or'No': 
+            print('Done :)')
+            return results
+    else: print('Nothing found!')
 
 #### FIX SEARCH FUNCTION SO IT DOESN'T FORCE YOU TO WRITE A FILE LMAO
 
