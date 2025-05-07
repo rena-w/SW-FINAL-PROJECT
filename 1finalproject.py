@@ -137,43 +137,22 @@ def combine(list_of_lists): # combines lists into one list
         merged += lst
     return merged
 
-def findWC(entry, return_single=True): # find how many words in a string in a list; takes/returns list of pairs by default or just a list of lengths
-    if not return_single:
-        first = entry[0] 
-        second = entry[1]
-        wc = len(first)
-        pair = (wc, second)
-        return pair # returns something like (7, POLITICS), (8, WELLNESS), (11, ENTERTAINMENT)
-    if return_single: # returns a single value 
-        headline = entry[0]
-        WC_value = len(headline)
-        return WC_value # returns an integer
+def findWC(entry): # find how many words in a string in a list; takes/returns list of pairs by default or just a list of lengths
+    headline = entry[0]
+    WC_value = len(headline)
+    return WC_value # returns an integer
         
-def findCL(entry, return_single=True): # find average character length of words in an entry; takes/returns list of pairs by default or just list of averages   
-    if not return_single:
-        first = entry[0]
-        second = entry[1]
-        one_ent = []
-        for word in first:
-            chara = 0
-            for c in word:
-                if c.isalpha():
-                    chara +=1
-            one_ent.append(chara)
-        avg_chara = average(one_ent) # average character length for a word in this entry
-        pair = (avg_chara, second)
-        return pair # returns something like (7.137647, POLITICS)
-    if return_single:
-        first = entry[0]
-        entry_count = []
-        for word in first:
-            count = 0
-            for char in word: 
-                if char.isalpha():
-                    count += 1 
-            entry_count.append(count)
-        avg = average(entry_count) # finds the average for that headline; returns one integer
-        return avg
+def findCL(entry): # find average character length of words in an entry; takes/returns list of pairs by default or just list of averages   
+    first = entry[0]
+    entry_count = []
+    for word in first:
+        count = 0
+        for char in word: 
+            if char.isalpha():
+                count += 1 
+        entry_count.append(count)
+    avg = average(entry_count) # finds the average for that headline; returns one integer
+    return avg
 
 def average(num_list): # find the mean of a list of numbers
     total = 0
@@ -200,8 +179,8 @@ def make_entry(paired_HLs):
     for pair in paired_HLs:    
         hl_joined = ' '.join(pair[0])
         category = pair[1]
-        word_count = findWC(pair, return_single=True) # word count of headline
-        chara_length = findCL(pair, return_single=True) # character length average of one headline
+        word_count = findWC(pair) # word count of headline
+        chara_length = findCL(pair) # character length average of one headline
         clean_entry = (hl_joined, category, word_count, chara_length)
         summaries_clean.append(clean_entry)
     write_file('entry_data.txt', summaries_clean, 'strings')
@@ -240,7 +219,7 @@ def find(entries_paired, variable):
                     captured.append(entry)
     if variable=='CL':
         print()
-        cond = input('X is (greater than > / less than < / equal to =) ?')
+        cond = input('X is (greater than > / less than < / equal to =) ')
         if cond=='>':    
             cl_limit = int(input('Enter number: '))
             for entry in entries_paired:
@@ -257,9 +236,15 @@ def find(entries_paired, variable):
                 if entry[3] == cl_li:
                     captured.append(entry)
     if len(captured) != 0:
-        print('Found!')        
-        write_file(f'{variable}_search_results.txt', captured, 'strings')
-        return captured
+        print('Found! Would you like to write to a file?')
+        answer = input('Y/N: ') 
+        if answer=='Y'or'yes'or'y'or'YES'or'Yes':
+            filename = input('Enter file name: ')
+            write_file(f'{filename}', captured, 'strings')
+            return captured
+        if answer=='N'or'no'or'n'or'NO'or'No':       
+            print('Done :)')
+            return captured
     else: 
         print('Nothing found!')
 
