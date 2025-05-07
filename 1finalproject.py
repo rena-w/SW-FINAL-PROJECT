@@ -194,22 +194,23 @@ def find(entries_paired):
         return variable
     search = choose_search() 
     def searching(search_choice):   
-        if f'{search_choice}'=='word'or'WORD':    
+        if f'{search_choice}'=='word':    
             print('What word(s) are you looking for?')
             target = str(input('Enter target word(s): '))
             captured_words = []
             for entry in entries_paired:
-                if f'{target}' in entry[0]: captured_words.append(entry)
+                if target in entry[0]: captured_words.append(entry)
             return captured_words
-        if f'{search_choice}'=='category'or'CATEGORY'or'cat':
+        if f'{search_choice}'=='category':
             print('What category are you looking for?')
-            category = input('Enter category: ')
+            inpt = input('Enter category: ')
+            category = inpt.upper()
             captured_cat = []
             for entry in entries_paired:
                 if f'{category}' in entry[1]:
                     captured_cat.append(entry)
             return captured_cat
-        if f'{search_choice}' == 'WC'or'wc':
+        if f'{search_choice}' == 'WC':
             captured_WC = []
             condition = input('WC is (greater than > / less than < / equal to =) ')
             if condition=='>':    
@@ -228,7 +229,7 @@ def find(entries_paired):
                     if entry[2] == wc_li:
                         captured_WC.append(entry)
             return captured_WC
-        if f'{search_choice}'=='CL'or'cl':
+        if f'{search_choice}'=='CL':
             captured_CL = []
             cond = input('CL is (greater than > / less than < / equal to =) ')
             if cond=='>':    
@@ -251,17 +252,14 @@ def find(entries_paired):
     if len(results) != 0:
         print('Found! Would you like to write to a file?')
         answer = input('Y/N: ') 
-        if f'{answer}'=='Y'or'yes'or'y'or'YES'or'Yes':
+        if f'{answer}'=='y':
             filename = input('Enter .txt file name: ')
             write_file(f'{filename}.txt', results, 'strings')
             return results
-        if f'{answer}'=='N'or'no'or'n'or'NO'or'No': 
+        if f'{answer}'=='n': 
             print('Done :)')
             return results
     else: print('Nothing found!')
-
-#### FIX SEARCH FUNCTION SO IT DOESN'T FORCE YOU TO WRITE A FILE LMAO
-
 
 ### LISTS ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
