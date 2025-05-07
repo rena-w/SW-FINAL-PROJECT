@@ -186,68 +186,108 @@ def make_entry(paired_HLs):
     write_file('entry_data.txt', summaries_clean, 'strings')
     return summaries_clean
 
-def find(entries_paired, variable):
-    print('search function activated!')
-    captured = []
-    if variable=='word':    
-        print('What word(s) are you looking for?')
-        target = input('Enter target word(s): ')
-        for entry in entries_paired:
-            if f'{target}' in entry[0]:
-                captured.append(entry)
-    if variable=='category':
-        print('What category are you looking for?')
-        category = input('Enter category: ')
-        for entry in entries_paired:
-            if f'{category}' in entry[1]:
-                captured.append(entry)
-    if variable == 'WC':
-        condition = input('X is (greater than > / less than < / equal to =) ')
-        if condition=='>':    
-            wc_limit = int(input('Enter number: '))
-            for entry in entries_paired:    
-                if entry[2] > wc_limit:
-                    captured.append(entry)
-        if condition=='<':
-            wc_lim = int(input('Enter number: '))
+def find(entries_paired):
+    def choose_search():    
+        print('search function activated!')
+        print('What are you looking for? --> WORD    CATEGORY      WC     CL')
+        variable = input('Enter search: ')
+        return variable
+    search = choose_search() 
+    def searching(search_choice):   
+        if f'{search_choice}'=='word'or'WORD':    
+            print('What word(s) are you looking for?')
+            target = str(input('Enter target word(s): '))
+            captured_words = []
             for entry in entries_paired:
-                if entry[2] < wc_lim:
-                    captured.append(entry)
-        if condition=='=':
-            wc_li = int(input('Enter number: '))
-            for entry in entries_paired:    
-                if entry[2] == wc_li:
-                    captured.append(entry)
-    if variable=='CL':
-        print()
-        cond = input('X is (greater than > / less than < / equal to =) ')
-        if cond=='>':    
-            cl_limit = int(input('Enter number: '))
+                if f'{target}' in entry[0]: captured_words.append(entry)
+            if len(captured_words) != 0:
+                print('Found! Would you like to write to a file?')
+                answer = input('Y/N: ') 
+                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
+                    filename = input('Enter .txt file name: ')
+                    write_file(f'{filename}.txt', captured_words, 'strings')
+                    return captured_words
+                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
+                return captured_words
+            else: print('Nothing found!')
+        if f'{search_choice}'=='category'or'CATEGORY'or'cat':
+            print('What category are you looking for?')
+            category = input('Enter category: ')
+            captured_cat = []
             for entry in entries_paired:
-                if entry[3] > cl_limit:
-                    captured.append(entry)
-        if cond=='<':
-            cl_lim = int(input('Enter number: '))
-            for entry in entries_paired:
-                if entry[3] < cl_lim:
-                    captured.append(entry)
-        if cond=='=':
-            cl_li = int(input('Enter number: '))
-            for entry in entries_paired:
-                if entry[3] == cl_li:
-                    captured.append(entry)
-    if len(captured) != 0:
-        print('Found! Would you like to write to a file?')
-        answer = input('Y/N: ') 
-        if answer=='Y'or'yes'or'y'or'YES'or'Yes':
-            filename = input('Enter .txt file name: ')
-            write_file(f'{filename}.txt', captured, 'strings')
-            return captured
-        if answer=='N'or'no'or'n'or'NO'or'No':       
-            print('Done :)')
-            return captured
-    else: 
-        print('Nothing found!')
+                if f'{category}' in entry[1]:
+                    captured_cat.append(entry)
+            if len(captured_cat) != 0:
+                print('Found! Would you like to write to a file?')
+                answer = input('Y/N: ') 
+                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
+                    filename = input('Enter .txt file name: ')
+                    write_file(f'{filename}.txt', captured_cat, 'strings')
+                    return captured_cat
+                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
+                return captured_cat
+            else: print('Nothing found!')
+        if f'{search_choice}' == 'WC'or'wc':
+            captured_WC = []
+            condition = input('WC is (greater than > / less than < / equal to =) ')
+            if condition=='>':    
+                wc_limit = int(input('Enter number: '))
+                for entry in entries_paired:    
+                    if entry[2] > wc_limit:
+                        captured_WC.append(entry)
+            if condition=='<':
+                wc_lim = int(input('Enter number: '))
+                for entry in entries_paired:
+                    if entry[2] < wc_lim:
+                        captured_WC.append(entry)
+            if condition=='=':
+                wc_li = int(input('Enter number: '))
+                for entry in entries_paired:    
+                    if entry[2] == wc_li:
+                        captured_WC.append(entry)
+            if len(captured_WC) != 0:
+                print('Found! Would you like to write to a file?')
+                answer = input('Y/N: ') 
+                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
+                    filename = input('Enter .txt file name: ')
+                    write_file(f'{filename}.txt', captured_WC, 'strings')
+                    return captured_WC
+                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
+                return captured_WC
+            else: print('Nothing found!')
+        if f'{search_choice}'=='CL'or'cl':
+            captured_CL = []
+            cond = input('CL is (greater than > / less than < / equal to =) ')
+            if cond=='>':    
+                cl_limit = int(input('Enter number: '))
+                for entry in entries_paired:
+                    if entry[3] > cl_limit:
+                        captured_CL.append(entry)
+            if cond=='<':
+                cl_lim = int(input('Enter number: '))
+                for entry in entries_paired:
+                    if entry[3] < cl_lim:
+                        captured_CL.append(entry)
+            if cond=='=':
+                cl_li = int(input('Enter number: '))
+                for entry in entries_paired:
+                    if entry[3] == cl_li:
+                        captured_CL.append(entry)
+            if len(captured_CL) != 0:
+                print('Found! Would you like to write to a file?')
+                answer = input('Y/N: ') 
+                if answer=='Y'or'yes'or'y'or'YES'or'Yes':
+                    filename = input('Enter .txt file name: ')
+                    write_file(f'{filename}.txt', captured_CL, 'strings')
+                    return captured_CL
+                if answer=='N'or'no'or'n'or'NO'or'No': print('Done :)')
+                return captured_CL
+            else: print('Nothing found!')
+    results = searching(search)
+    return results
+
+#### FIX SEARCH FUNCTION SO IT DOESN'T FORCE YOU TO WRITE A FILE LMAO
+
 
 ### LISTS ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
@@ -276,12 +316,9 @@ categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
 categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)  
 #write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
 
-#all_entries = make_entry(categorized_headlines)
-#entries = find(all_entries, 'WC')
-cat_search_test = find(categorized_headlines, 'category')
-WC_search_test = find(categorized_headlines, 'WC')
-CL_search_test = find(categorized_headlines, 'CL')
-word_search_test = find(categorized_headlines, 'word')
+entries = make_entry(categorized_headlines)
+#correct_entries = find(all_entries, 'WC')
+test = find(entries)
 
 ## entries has: (headline, category, word count, character count)
 ### REGEX 
