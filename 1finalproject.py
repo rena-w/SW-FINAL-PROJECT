@@ -2,6 +2,8 @@ import sys
 import re
 import nltk 
 from nltk.tag import pos_tag
+from nltk.corpus import stopwords
+stopwords = set(stopwords.words('english'))
 import numpy as np
 
 #### LIST OF FUNCTIONS TO USE ####
@@ -11,7 +13,7 @@ def get_lines(file): # get data in form of lines
             lines = input.readlines()
         lines_raw = [line.split() for line in lines] # this gets us each article entry in a separate string
         joined_lines = [' '.join(lin) for lin in lines_raw]
-        chars = str.maketrans({'{': '', '}': '', ',': '', '\"':'','\"':'', '\'':'', '-':' '})
+        chars = str.maketrans({'{':'', '}':'', ',':'', '\"':'','\"':'','?':'', '\'':'', '-':' '})
         cleaned = [item.translate(chars) for item in joined_lines] # gets rid of punctuation like {} brackets and double quotes ""
         return cleaned
     
@@ -29,23 +31,29 @@ def get_lines(file): # get data in form of lines
     alph = replace_cats(clean)
     
     def split_n_sort(input): # split by item in entry
-        def split_on_cat(input_string):
+        def split_delete_unicode(input_string):
             split = re.split(':::', input_string)
             stripped = [i.strip() for i in split]
-            rep_quotes = [re.sub('\\\\u201[8|9]', '', a) for a in stripped]
-            rep_emdash = [re.sub('\\\\u201[3|4|5]', '', b) for b in rep_quotes]
-            rep_e_aigu = [re.sub('\\\\u0301', 'é', c) for c in rep_emdash]
-            rep_e_grave = [re.sub('\\\\u200e[8|9]', 'è', d) for d in rep_e_aigu]
-            rep_a_grave = [re.sub('\\\\u00e1', 'á', e) for e in rep_e_grave]
-            rep_a_aigu = [re.sub('\\\\u00e1', 'á', f) for f in rep_a_grave]
-            rep_space = [re.sub('\\\\u00a0', ' ', g) for g in rep_a_aigu]
-            rep_ellipsis = [re.sub('\\\\u2026', '', h) for h in rep_space]
-            rep_o_grave = [re.sub('\\\\u00f3', 'ò', i) for i in rep_ellipsis]
-            rep_a_diaeresis = [re.sub('\\\\u00e4', 'ä', j) for j in rep_o_grave]
-            rep_u_diaeresis = [re.sub('\\\\u00fc', 'ü', k) for k in rep_a_diaeresis]
-            return rep_u_diaeresis    
+            delete = [re.sub('\\\\u201[345890]|\\\\u200[abef]|\\\\u00ae|\\\\u00a[39b]|\\\\u2032|\\\\u02bc|\\\\u00b[047]|\\\\u2122|\\\\u202[68]|\\\\ufeff|\\\\u02bb', '', a) for a in stripped]
+            rep_e = [re.sub('\\\\u0301|\\\\uffc3\\\\uffab|\\\\uffc3\\\\uffa9|\\\\u200e[89]|\\\\u00e[89ab]|\\\\u1ec5', 'e', b) for b in delete]
+            rep_E = [re.sub('\\\\u00c9', 'E', c) for c in rep_e]
+            rep_a = [re.sub('\\\\u00e[01245]|\\\\u1ea[15]|\\\\u0101', 'a', d) for d in rep_E]
+            rep_i = [re.sub('\\\\u00e[cdef]', 'i', e) for e in rep_a]
+            rep_o = [re.sub('\\\\u00f[3486]|\\\\u01d2', 'o', f) for f in rep_i]
+            rep_u = [re.sub('\\\\u00f[abc9]', 'u', g) for g in rep_o]
+            rep_n = [re.sub('\\\\u00f1', 'n', h) for h in rep_u]
+            rep_c = [re.sub('\\\\u00e7', 'c', i) for i in rep_n]
+            rep_s = [re.sub('\\\\u015b|\\\\u0219', 's', j) for j in rep_c]
+            rep_oe = [re.sub('\\\\u0153','oe',k) for k in rep_s]
+            rep_z = [re.sub('\\\\u017e', 'z', l) for l in rep_oe]
+            rep_U = [re.sub('\\\\u00dc','U',m) for m in rep_z]
+            rep_C = [re.sub('\\\\u00c7|\\\\u010c','C', n) for n in rep_U]
+            space = [re.sub('\\\\u00a0', ' ', o) for o in rep_C]
+            rep_doublequotes = [re.sub('\\\\u201[cd]|\\\\', '"', p) for p in space]
+            rep_doublespaces = [re.sub(r'\s{2,}', ' ', q) for q in rep_doublequotes]
+            return rep_doublespaces    
             
-        split_entries = [split_on_cat(string) for string in input]
+        split_entries = [split_delete_unicode(string) for string in input]
   
         def sort_alph(input_list): # sort alphabetically
             sorted_input_list = []
@@ -105,7 +113,7 @@ def make_pair(list_of_entries, first_term, second_term, split=True): # make pair
             paired_items_list = [s for s in entry if any(keyword in s for keyword in keywords)]
             clean_pair_a = [item.replace(f'{first_term}','') for item in paired_items_list]
             clean_pair_b = [e.replace(f'{second_term}','') for e in clean_pair_a]
-            paired_unsplit.append(tuple(clean_pair_b))
+            paired_unsplit.append(clean_pair_b)
         return paired_unsplit
 
 def get_category(list, category): # find all (split HL, CAT) pairs and return list of only the split HL
@@ -137,48 +145,43 @@ def combine(list_of_lists): # combines lists into one list
         merged += lst
     return merged
 
-#def clean(list, target, regex=True):
-    #if regex:
-        #re.sub'(?=, \d)|(?<=, )'
-    #if not regex:
-        #text = str(list)
-        #for item in list:
-            #[i.replace(f'{target}', '') for i in item]
-
-def findWC(entry, paired=True, return_single=True): # find how many words in a string in a list; takes/returns list of pairs by default or just a list of lengths
-    if paired:
-        if not return_single:
-            first = entry[0] 
-            second = entry[1]
-            wc = len(first)
-            pair = (wc, second)
-            return pair # returns something like (7, POLITICS), (8, WELLNESS), (11, ENTERTAINMENT)
-        if return_single: # returns a single value 
-            headline = entry[0]
-            WC_value = len(headline)
-            return WC_value # returns an integer
-    if not paired:
-        word_count = len(entry)
-        return word_count
+def findWC(entry, return_single=True): # find how many words in a string in a list; takes/returns list of pairs by default or just a list of lengths
+    if not return_single:
+        first = entry[0] 
+        second = entry[1]
+        wc = len(first)
+        pair = (wc, second)
+        return pair # returns something like (7, POLITICS), (8, WELLNESS), (11, ENTERTAINMENT)
+    if return_single: # returns a single value 
+        headline = entry[0]
+        WC_value = len(headline)
+        return WC_value # returns an integer
         
-def findCL(entry, paired=True, return_single=True): # find average character length of words in an entry; takes/returns list of pairs by default or just list of averages
-    if paired:    
-        if not return_single:
-            first = entry[0]
-            second = entry[1]
-            chara_lengths = [len(w) for w in first] # this is [5, 10, 13, 4, 6, 8, 7, 4]
-            avg_chara = average(chara_lengths) # average character length for a word in this entry
-            pair = (avg_chara, second)
-            return pair # returns something like (7.137647, POLITICS)
-        if return_single:
-            first = entry[0]
-            chara_count = [len(word) for word in first] # returns list of character counts like [3, 6, 2, 4, 6, 5]
-            avg = average(chara_count) # finds the average for that headline; returns one integer
-            return avg
-    if not paired:
-        chara = [len(word) for word in entry]
-        avg_char = average(chara)
-        return avg_char
+def findCL(entry, return_single=True): # find average character length of words in an entry; takes/returns list of pairs by default or just list of averages   
+    if not return_single:
+        first = entry[0]
+        second = entry[1]
+        one_ent = []
+        for word in first:
+            chara = 0
+            for c in word:
+                if c.isalpha():
+                    chara +=1
+            one_ent.append(chara)
+        avg_chara = average(one_ent) # average character length for a word in this entry
+        pair = (avg_chara, second)
+        return pair # returns something like (7.137647, POLITICS)
+    if return_single:
+        first = entry[0]
+        entry_count = []
+        for word in first:
+            count = 0
+            for char in word: 
+                if char.isalpha():
+                    count += 1 
+            entry_count.append(count)
+        avg = average(entry_count) # finds the average for that headline; returns one integer
+        return avg
 
 def average(num_list): # find the mean of a list of numbers
     total = 0
@@ -200,47 +203,17 @@ def stats(num_list): # takes a list of numbers and does statistics calculations
     stats_listed = [('mean:', mean), ('median:', median), ('variance:', variance), ('std dev:', std_dev), ('range:', range_val)]
     return stats_listed
 
-def get_gen_summary(paired_HLs):
-    hl_WC = findWC(paired_HLs, return_single=True) # list of word counts of every headline
-    write_file('headlines_WC.txt', hl_WC, 'strings')
-    hl_CL = findCL(paired_HLs, return_single=True) # list of character length averages of every headline
-    write_file('headlines_CL.txt', hl_CL, 'strings')
-    stats_WC = average(hl_WC)
-    stats_CL = average(hl_CL)
-    results = [('General WC:', [hl_WC, stats_WC]), ('General CL:', [hl_CL, stats_CL])]
-    return results
-
 def make_entry(paired_HLs):
-    summaries = []
+    summaries_clean = []
     for pair in paired_HLs:    
         hl_joined = ' '.join(pair[0])
         category = pair[1]
-        word_count = findWC(pair, paired=True, return_single=True) # word count of headline
-        chara_length = findCL(pair, paired=True, return_single=True) # character length average of one headline
-        entry = (hl_joined, category, word_count, chara_length)
-        summaries.append(entry)
-    write_file('entry_data.txt', summaries, 'strings')
-    return summaries
-
-def get_cat_summary(list_of_entries, category):
-    data = get_category(list_of_entries, f'{category}') # list of lists of strings (split HLs)
-    write_file(f'{category}_headlines.txt', data, 'strings') # writes new file
-    data_WC = [[findWC(entry, paired=True) for word in data] for entry in data] # returns list of just values
-    write_file(f'{category}_WC.txt', data_WC, format='strings')
-    if len(data_WC) == 0:
-        print('error! something went wrong:(')
-    avgWC = average(data_WC)
-    stats_WC = stats(data_WC)
-    data_CL = findCL(data, paired=False)
-    write_file(f'{category}_CL.txt', data_WC, 'strings')
-    if len(data_CL) == 0:
-        print('error! something went wrong:(')
-    avgCL = average(data_WC)
-    stats_CL = stats(data_CL)
-    result = [('WC:', [avgWC, stats_WC]), ('CL:', [avgCL, stats_CL])]
-    #print('WC:', result[0])
-    #print('CL:', result[1])
-    return result
+        word_count = findWC(pair, return_single=True) # word count of headline
+        chara_length = findCL(pair, return_single=True) # character length average of one headline
+        clean_entry = (hl_joined, category, word_count, chara_length)
+        summaries_clean.append(clean_entry)
+    write_file('entry_data.txt', summaries_clean, 'strings')
+    return summaries_clean
 
 def look_for(entries_paired, target):
     captured = []
@@ -254,32 +227,32 @@ def look_for(entries_paired, target):
         print('Nothing found!')
 
 ### LISTS ###
-entries = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
+raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
 
-links = find_type(entries, '$A')
+links = find_type(raw_data, '$A')
 
-headlines = find_type(entries, '$B')
+headlines = find_type(raw_data, '$B')
 write_file('HL.txt', headlines, 'strings')
 HLwords = combine(headlines) # all words in all headlines
 write_file('HL_words', HLwords, 'single string')
-writtenHL = find_type(entries, '$B', split=False)
+writtenHL = find_type(raw_data, '$B', split=False)
 write_file('headlines_clean.txt', writtenHL, 'strings')
 
-categories_all = find_type(entries, '$C', split=False)
+categories_all = find_type(raw_data, '$C', split=False)
 categories = set(categories_all)
 write_file('categories.txt', categories, 'strings')
 write_file('categories_all.txt', categories_all, 'strings')
 #category_list = nltk.FreqDist(categories)
 #print(category_list.most_common(5))
 
-descriptions = find_type(entries, '$D')
-authors = find_type(entries, '$E')
-dates = find_type(entries, '$F')
+descriptions = find_type(raw_data, '$D')
+authors = find_type(raw_data, '$E')
+dates = find_type(raw_data, '$F')
                 
 #### PAIRS ####
-categorized_headlines = make_pair(entries, '$B', '$C')
+categorized_headlines = make_pair(raw_data, '$B', '$C')
 write_file('categorized_HL.txt', categorized_headlines, 'strings')
-categorized_HLs_clean = make_pair(entries, '$B', '$C', split=False)  
+categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)  
 write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
 
 #### GENERAL DESC STATS ####
@@ -298,8 +271,12 @@ write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
 # std dev: 0.9212320640805423
 # range: 36.0
 
-test_entry_data = make_entry(categorized_headlines)
+entries = make_entry(categorized_headlines)
 politics_test = get_category(categorized_headlines, 'POLITICS')
 
-## need a file that has:
-#### headline, category, word count, character count
+## entries has: (headline, category, word count, character count)
+### REGEX 
+# for removing () and ': \('|\)$|'
+# for hashtags: #[0-9]*[A-Za-z]+[0-9a-zA-Z]+(?=\s)
+# for any all caps terms in parentheses: \([A-Z]+\)
+# for numbers: (?<!\$|:)(?<=\s|^)[0-9]+(?=\s|,|:|\?)(?!:\d)

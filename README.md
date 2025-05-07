@@ -22,6 +22,12 @@
 ## Methodology 
 *This is one of the most important sections. A scientific paper should provide enough information that another scientist would be able to replicate the results. You don't have to cover every single detail of how your code is implemented, etc, but you should minimally describe any processing you apply to the data, as well as the specific statistical tests you use. This section should also formalize your hypotheses. If you decide to create a Github repository (see extra-credit section), you may cite portions of the code where appropriate.*
 
+#### **Non-standard terms**
+- hashtags — treated as one single word (+=1 in word count) but ignored for character count, since hashtags are often several words in sequence with no spaces
+    - this results in an incorrect judgement — it would indicate that there are LWs in that entry when there aren't (false positive)
+- numbers — treated as one single word
+    - when counting words, the input was the entire entry. I first replaced all instances of digits
+
 ## Results
 *A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*
 
