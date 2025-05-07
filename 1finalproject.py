@@ -187,6 +187,7 @@ def make_entry(paired_HLs):
     return summaries_clean
 
 def find(entries_paired, variable):
+    print('search function activated!')
     captured = []
     if variable=='word':    
         print('What word(s) are you looking for?')
@@ -239,8 +240,8 @@ def find(entries_paired, variable):
         print('Found! Would you like to write to a file?')
         answer = input('Y/N: ') 
         if answer=='Y'or'yes'or'y'or'YES'or'Yes':
-            filename = input('Enter file name: ')
-            write_file(f'{filename}', captured, 'strings')
+            filename = input('Enter .txt file name: ')
+            write_file(f'{filename}.txt', captured, 'strings')
             return captured
         if answer=='N'or'no'or'n'or'NO'or'No':       
             print('Done :)')
@@ -277,7 +278,10 @@ categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)
 
 #all_entries = make_entry(categorized_headlines)
 #entries = find(all_entries, 'WC')
-politics_test = find(categorized_headlines, 'category')
+cat_search_test = find(categorized_headlines, 'category')
+WC_search_test = find(categorized_headlines, 'WC')
+CL_search_test = find(categorized_headlines, 'CL')
+word_search_test = find(categorized_headlines, 'word')
 
 ## entries has: (headline, category, word count, character count)
 ### REGEX 
