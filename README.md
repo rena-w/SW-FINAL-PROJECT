@@ -1,5 +1,5 @@
 # LING 250 — Final Project
-###### *by Serena Wong — LING 250 — Spring 2025*
+###### *by Serena Wong*
 
 ### Topic: word choice in news headlines, dependent on word length in characters
 
@@ -12,11 +12,37 @@
 ## Data
 *Overview of the data you've used for this project. This should be pretty close to your data statement milestone. This is also where to provide summary statistics of the data.*
 
-- combined "ARTS", "ARTS & CULTURE", and "CULTURE & ARTS" into one category
+#### Cleaning data
 
-#### **Determining outliers**
-- formula = Q1 - 3*IQR, Q3 - 3*IQR 
-    - the increased threshold for outliers is due to the very small IQR found from the data
+At the start, I had 209,518 entries in my dataset. I went through and manually removed those that were blank, had no category, or were unusable for various reasons. I then 
+
+
+#### Data table
+The variables of interest are: 
+- **Word count** (WC) — the number of items* in a headline 
+
+            wc = len(headline) 
+- **Character length** (CL) - the average length (in alphabetic characters) of a word in a headline. 
+
+    - *This was calculated by counting the number of alphabetic characters in each word, then finding the overall average of all the words in the entire headline.*
+
+        
+            for word in headline:
+                count = 0
+                for char in word: 
+                    if char.isalpha():
+                        count += 1 
+                entry_count.append(count)
+            avg = average(entry_count)
+            return avg
+
+My tabled data is divided into six columns. Each entry contains the category of the article, followed by the original & cleaned versions of the headline, WC, and CL. 
+
+The creators of the corpus had 41 categories in the original dataset. To cut down on the number of groups, I combined labels that seemed to be for the same type of content (i.e., "ARTS", "ARTS & CULTURE", and "CULTURE & ARTS") into one category. I ended up with 30 categories, which are listed below in the table.
+
+| category | number of articles |
+|----------|--------------------|
+
 
 
 ## Methodology 
@@ -30,6 +56,10 @@
 
 #### **WC vs. CL**
 - numbers are counted as their own words, but 
+
+#### **Determining outliers**
+- formula = Q1 - 3*IQR, Q3 - 3*IQR 
+    - the increased threshold for outliers is due to the very small IQR found from the data
 
 ## Results
 *A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*

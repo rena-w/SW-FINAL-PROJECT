@@ -274,7 +274,7 @@ def find(entries_paired): # data search function — can look for particular wor
                         captured_cleanCL.append(r)
             if f'{condition}'=='<':
                 for i in entries_listd:
-                    if y[6] < cl_limit:
+                    if i[6] < cl_limit:
                         captured_cleanCL.append(i)
             if f'{condition}'=='=':
                 for s in entries_listd:
@@ -333,30 +333,45 @@ raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DAT
 
 headlines = find_type(raw_data, '$B')
 UC_HL_words = combine(headlines) # all words in headlines
-total_word_count = len(UC_HL_words)
-#print('Total word count: ', total_word_count)
-rough_avg_WC = total_word_count/len(headlines) # rough estimate of average word count from all words
-#print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
-
+print('unclean word count: ', len(UC_HL_words))
 clean_loose_HLs = [clean(hl, paired=False) for hl in headlines]
 HLwords = combine(clean_loose_HLs) # words remaining AFTER CLEAN
-cleaned_word_count = len(HLwords)
-#print('Cleaned word count: ', cleaned_word_count)
-clean_avg_WC = cleaned_word_count/len(clean_loose_HLs)
-#print('Rough average word count per CLEAN headline: ', clean_avg_WC)
+print('clean word count: ', len(HLwords))
+print('set of words: ', len(set(HLwords)))
 
 categories_all = find_type(raw_data, '$C', split=False)
 categories = sorted(set(categories_all))
                 
 #### PAIRS ####
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
-#write_file('categorized_headlines', categorized_headlines, 'strings')
 cleaned_headlines = [clean(h) for h in categorized_headlines]
 entries = make_entry(categorized_headlines)
-#write_file('entry_data', entries, 'strings')
-search = find(entries)
-
+print('number of entries TOTAL: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
+
+#search = find(entries)
+
+
+##### DATA & CALCULATIONS #####
+print('number of data: ', len([entry[3] for entry in entries]))
+#Ogen_WC = average([entry[3] for entry in entries])
+#print('original avg wc: ', Ogen_WC)
+#Cgen_WC = average([entry[4] for entry in entries])
+#print('clean avg wc: ', Cgen_WC)
+#Ogen_CL = average([entry[5] for entry in entries])
+#print('original avg cl: ', Ogen_CL)
+#Cgen_CL = average([entry[6] for entry in entries])
+#print('clean avg cl: ', Cgen_CL)
+
+total_word_count = len(UC_HL_words) # 2033302
+#print('Total word count: ', total_word_count) 
+rough_avg_WC = total_word_count/len(headlines) # rough estimate of average word count from all words
+#print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
+cleaned_word_count = len(HLwords) # 
+#print('Cleaned word count: ', cleaned_word_count)
+clean_avg_WC = cleaned_word_count/len(clean_loose_HLs)
+#print('Rough average word count per CLEAN headline: ', clean_avg_WC)
+
 
 ### REGEX 
 # for removing parentheses and apostrophes: \('|\)$|']
