@@ -189,79 +189,144 @@ def make_entry(UCpairs): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each 
         entries.append(entry)
     return entries
 
-def find(entries_paired): # data search function — can look for particular words, categories, WCs, or CLs
-    def choose_search():    
-        print('search function activated!')
-        print('What are you looking for? --> WORD    CATEGORY      WC     CL')
-        variable = input('Enter search: ')
-        return variable
-    search = choose_search() 
-    def searching(search_choice):   
-        if f'{search_choice}'=='word':    
-            print('What word(s) are you looking for?')
-            target = str(input('Enter target word(s): '))
-            captured_words = []
-            for entry in entries_paired:
-                if target in entry[0]: captured_words.append(entry)
-            return captured_words
-        if f'{search_choice}'=='category':
-            print('What category are you looking for?')
-            category = input('Enter category: ')
-            captured_cat = []
-            for entry in entries_paired:
-                if f'{category}' in entry[1]:
-                    captured_cat.append(entry)
-            return captured_cat
-        if f'{search_choice}' == 'WC':
-            captured_WC = []
-            condition = input('WC is (greater than > / less than < / equal to =) ')
-            if condition=='>':    
-                wc_limit = int(input('Enter number: '))
-                for entry in entries_paired:    
-                    if entry[2] > wc_limit:
-                        captured_WC.append(entry)
-            if condition=='<':
-                wc_lim = int(input('Enter number: '))
-                for entry in entries_paired:
-                    if entry[2] < wc_lim:
-                        captured_WC.append(entry)
-            if condition=='=':
-                wc_li = int(input('Enter number: '))
-                for entry in entries_paired:    
-                    if entry[2] == wc_li:
-                        captured_WC.append(entry)
-            return captured_WC
-        if f'{search_choice}'=='CL':
-            captured_CL = []
-            cond = input('CL is (greater than > / less than < / equal to =) ')
-            if cond=='>':    
-                cl_limit = int(input('Enter number: '))
-                for entry in entries_paired:
-                    if entry[3] > cl_limit:
-                        captured_CL.append(entry)
-            if cond=='<':
-                cl_lim = int(input('Enter number: '))
-                for entry in entries_paired:
-                    if entry[3] < cl_lim:
-                        captured_CL.append(entry)
-            if cond=='=':
-                cl_li = int(input('Enter number: '))
-                for entry in entries_paired:
-                    if entry[3] == cl_li:
-                        captured_CL.append(entry)
-            return captured_CL
-    results = searching(search)
-    if len(results) != 0:
-        print('Found! Would you like to write to a file?')
-        answer = input('Y/N: ') 
-        if f'{answer}'=='y':
-            filename = input('Enter .txt file name: ')
-            write_file(f'{filename}.txt', results, 'strings')
-            return results
-        if f'{answer}'=='n': 
-            print('Done :)')
-            return results
-    else: print('Nothing found!')
+def find(entries_paired): # data search function — can look for particular words, categories, WCs, or CLs 
+    print('search function activated!')
+    print('What are you looking for? --> WORD    CATEGORY      WC     CL')
+    variable = input('Enter search: ')
+    def word_search(entries_lista, original=True):
+        print('What word(s) are you looking for?')
+        target = str(input('Enter target word(s): '))    
+        if original:   
+            captured_Owords = []
+            for ee in entries_lista:
+                if target in ee[1]: captured_Owords.append(ee)
+            return captured_Owords
+        if not original:   
+            captured_Cwords = []
+            for rr in entries_lista:
+                if target in rr[2]: captured_Cwords.append(rr)
+            return captured_Cwords
+    def category_search(entries_listb):
+        print('What category are you looking for?')
+        inpt = input('Enter category: ')
+        category = inpt.upper()
+        captured_cat = []
+        for eee in entries_listb:
+            if f'{category}' in eee[0]:
+                captured_cat.append(eee)
+        return captured_cat
+    def WC_search(entries_listc, original=True):
+        condition = input('WC is (greater than > / less than < / equal to =) ')
+        wc_limit = int(input('Enter number: '))
+        if original:
+            captured_origWC = []
+            if f'{condition}'=='>':    
+                for e in entries_listc:    
+                    if e[3] > wc_limit:
+                        captured_origWC.append(e)
+            if f'{condition}'=='<':
+                for n in entries_listc:
+                    if n[3] < wc_limit:
+                        captured_origWC.append(n)
+            if f'{condition}'=='=':
+                for t in entries_listc:    
+                    if t[3] == wc_limit:
+                        captured_origWC.append(t)
+            return captured_origWC
+        if not original:
+            captured_cleanWC = []
+            if f'{condition}'=='>':    
+                for r in entries_listc:    
+                    if r[4] > wc_limit:
+                        captured_cleanWC.append(r)
+            if f'{condition}'=='<':
+                for i in entries_listc:
+                    if i[4] < wc_limit:
+                        captured_cleanWC.append(i)
+            if f'{condition}'=='=':
+                for eeee in entries_listc:    
+                    if eeee[4] == wc_limit:
+                        captured_cleanWC.append(eeee)
+            return captured_cleanWC
+    def CL_search(entries_listd, original=True):
+        condition = input('CL is (greater than > / less than < / equal to =) ')
+        cl_limit = int(input('Enter number: '))
+        if original:    
+            captured_origCL = []
+            if f'{condition}'=='>':    
+                for e in entries_listd:
+                    if e[5] > cl_limit:
+                        captured_origCL.append(e)
+            if f'{condition}'=='<':
+                for n in entries_listd:
+                    if n[5] < cl_limit:
+                        captured_origCL.append(n)
+            if f'{condition}'=='=':
+                for t in entries_listd:
+                    if t[5] == cl_limit:
+                        captured_origCL.append(t)
+            return captured_origCL
+        if not original:
+            captured_cleanCL = []
+            if f'{condition}'=='>':    
+                for r in entries_listd:
+                    if r[6] > cl_limit:
+                        captured_cleanCL.append(r)
+            if f'{condition}'=='<':
+                for i in entries_listd:
+                    if y[6] < cl_limit:
+                        captured_cleanCL.append(i)
+            if f'{condition}'=='=':
+                for s in entries_listd:
+                    if s[6] == cl_limit:
+                        captured_cleanCL.append(s)
+            return captured_cleanCL
+    def result_finding(results):
+        if len(results) != 0:
+            print('Found! Would you like to write to a file?')
+            answer = input('Y/N: ') 
+            if f'{answer}'=='y':
+                filename = input('Enter .txt file name: ')
+                write_file(f'{filename}.txt', results, 'strings')
+                return results
+            if f'{answer}'=='n': 
+                print('Done :)')
+                return results
+        else: print('Nothing found!')
+    if f'{variable}'=='word':       
+        loc = input('Searching ORIGINAL or CLEAN? Enter: ')
+        if f'{loc}'=='original':
+            orig_word_search = word_search(entries_paired, original=True)
+            results_a = result_finding(orig_word_search)
+            return results_a
+        if f'{loc}'=='clean':
+            clean_word_search = word_search(entries_paired, original=False)
+            results_b = result_finding(clean_word_search)
+            return results_b
+    if f'{variable}'=='category':
+        category_search_ = category_search(entries_paired)
+        results_c = result_finding(category_search_)
+        return results_c
+    if f'{variable}' == 'WC':
+        lo = input('Searching ORIGINAL or CLEAN? Enter: ')
+        if f'{lo}'=='original':
+            orig_wc_search = WC_search(entries_paired, original=True)
+            results_d = result_finding(orig_wc_search)
+            return results_d
+        if f'{lo}'=='clean':
+            clean_wc_search = WC_search(entries_paired, original=False)
+            results_e = result_finding(clean_wc_search)
+            return results_e
+    if f'{variable}'=='CL':
+        l = input('Searching ORIGINAL or CLEAN? Enter: ')
+        if f'{l}'=='original':
+           orig_cl_search = CL_search(entries_paired, original=True)
+           results_f = result_finding(orig_cl_search)
+           return results_f
+        if f'{l}'=='clean':
+           clean_cl_search = CL_search(entries_paired, original=False)
+           results_g = result_finding(clean_cl_search)
+           return results_g
         
 ### DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
@@ -269,16 +334,16 @@ raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DAT
 headlines = find_type(raw_data, '$B')
 UC_HL_words = combine(headlines) # all words in headlines
 total_word_count = len(UC_HL_words)
-print('Total word count: ', total_word_count)
+#print('Total word count: ', total_word_count)
 rough_avg_WC = total_word_count/len(headlines) # rough estimate of average word count from all words
-print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
+#print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
 
 clean_loose_HLs = [clean(hl, paired=False) for hl in headlines]
 HLwords = combine(clean_loose_HLs) # words remaining AFTER CLEAN
 cleaned_word_count = len(HLwords)
-print('Cleaned word count: ', cleaned_word_count)
+#print('Cleaned word count: ', cleaned_word_count)
 clean_avg_WC = cleaned_word_count/len(clean_loose_HLs)
-print('Rough average word count per CLEAN headline: ', clean_avg_WC)
+#print('Rough average word count per CLEAN headline: ', clean_avg_WC)
 
 categories_all = find_type(raw_data, '$C', split=False)
 categories = sorted(set(categories_all))
@@ -286,15 +351,12 @@ categories = sorted(set(categories_all))
 #### PAIRS ####
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
 #write_file('categorized_headlines', categorized_headlines, 'strings')
+cleaned_headlines = [clean(h) for h in categorized_headlines]
 entries = make_entry(categorized_headlines)
-write_file('entry_data', entries, 'strings')
-#search = find(entries)
+#write_file('entry_data', entries, 'strings')
+search = find(entries)
 
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
-
-# TO FIX
-### too many entries with too many numbers, skews avg chara count 
-##### SOLVED — removed stopwords and numbers lmao
 
 ### REGEX 
 # for removing parentheses and apostrophes: \('|\)$|']
