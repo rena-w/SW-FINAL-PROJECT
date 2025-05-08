@@ -1,7 +1,5 @@
 # LING 250 — Final Project
-### by Serena Wong for LING 250 — Spring 2025
-
-##
+###### *by Serena Wong — LING 250 — Spring 2025*
 
 ### Topic: word choice in news headlines, dependent on word length in characters
 
@@ -29,6 +27,9 @@
     - this results in an incorrect judgement — it would indicate that there are LWs in that entry when there aren't (false positive)
 - numbers — treated as one single word
     - when counting words, the input was the entire entry. I first replaced all instances of digits
+
+#### **WC vs. CL**
+- numbers are counted as their own words, but 
 
 ## Results
 *A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*

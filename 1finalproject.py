@@ -3,7 +3,6 @@ import re
 import nltk 
 from nltk.tag import pos_tag
 from nltk.corpus import stopwords
-stopwords = set(stopwords.words('english'))
 import numpy as np
 
 #### LIST OF FUNCTIONS TO USE ####
@@ -89,35 +88,23 @@ def find_type(input_list, type_var, split=True): # collect items from entries th
                     types.append(stripped)
         return types
 
-def make_pair(list_of_entries, first_term, second_term, split=True): # make pairs of two variables, can be whole thing or split into words
-    if split:    
-        paired_unsplit = []
-        keywords = [f'{first_term}', f'{second_term}']
-        for entry in list_of_entries:
-            paired_items_list = [s for s in entry if any(keyword in s for keyword in keywords)]
-            clean_pair_a = [item.replace(f'{first_term}','') for item in paired_items_list]
-            clean_pair_b = [e.replace(f'{second_term}','') for e in clean_pair_a]
-            paired_unsplit.append(tuple(clean_pair_b))
-        paired_split = []
-        for tup in paired_unsplit:
-            first = tup[0]
-            second = tup[1]
-            split_first = first.split(' ')
-            combo = (split_first, second)
-            paired_split.append(combo)
-        return paired_split
-    else: 
-        paired_unsplit = []
-        keywords = [f'{first_term}', f'{second_term}']
-        for entry in list_of_entries:
-            paired_items_list = [s for s in entry if any(keyword in s for keyword in keywords)]
-            clean_pair_a = [item.replace(f'{first_term}','') for item in paired_items_list]
-            clean_pair_b = [e.replace(f'{second_term}','') for e in clean_pair_a]
-            paired_unsplit.append(clean_pair_b)
-        return paired_unsplit
+def make_pair(list_of_entries, first_term, second_term): # make pairs of two variables
+    cleaned = []
+    paired = []
+    keywords = [f'{first_term}', f'{second_term}']
+    for entry in list_of_entries:
+        paired_items_list = [s for s in entry if any(keyword in s for keyword in keywords)]
+        clean_pair_a = [item.replace(f'{first_term}','') for item in paired_items_list]
+        clean_pair_b = [e.replace(f'{second_term}','') for e in clean_pair_a]
+        cleaned.append(tuple(clean_pair_b))
+    for tup in cleaned:
+        split_first = tup[0].split(' ')
+        combo = (split_first, tup[1])
+        paired.append(combo)
+    return paired
 
 def write_file(file, list_data, format): # writes data to another file
-    with open(f'{file}', 'w') as outfile:
+    with open(f'{file}.txt', 'w') as outfile:
         if f'{format}' == 'tuples':
             for tup in list_data:
                 for item in tup:
@@ -137,15 +124,35 @@ def combine(list_of_lists): # combines lists into one list
         merged += lst
     return merged
 
-def findWC(entry): # find how many words in a string in a list; takes/returns list of pairs by default or just a list of lengths
+def clean(entry, paired=True): # cleans headlines — removes numbers and stop words
+    stop_words = set(stopwords.words('english'))
+    if paired:
+        cleaned_p = []
+        headline = entry[0]
+        for word in headline: 
+            w = word.lower()
+            if w.isalpha() and w not in stop_words:
+                cleaned_p.append(word)
+        results = (cleaned_p, entry[1])
+        return results
+    if not paired:
+        cleaned_np = []
+        hl = entry    
+        for wor in hl:
+            wo = wor.lower()
+            if wo.isalpha() and wo not in stop_words:
+                cleaned_np.append(wor)
+        return cleaned_np
+
+def findWC(entry): # find how many words in a string in a list
     headline = entry[0]
     WC_value = len(headline)
     return WC_value # returns an integer
         
-def findCL(entry): # find average character length of words in an entry; takes/returns list of pairs by default or just list of averages   
-    first = entry[0]
+def findCL(entry): # find average character length of words in an entry
+    headline = entry[0]
     entry_count = []
-    for word in first:
+    for word in headline:
         count = 0
         for char in word: 
             if char.isalpha():
@@ -165,28 +172,24 @@ def average(num_list): # find the mean of a list of numbers
     average = total / count
     return average
 
-def stats(num_list): # takes a list of numbers and does statistics calculations
-    mean = np.mean(num_list)
-    median = np.median(num_list)
-    variance = np.var(num_list)
-    std_dev = np.std(num_list)
-    range_val = np.max(num_list) - np.min(num_list)
-    stats_listed = [('mean:', mean), ('median:', median), ('variance:', variance), ('std dev:', std_dev), ('range:', range_val)]
-    return stats_listed
-
-def make_entry(paired_HLs):
-    summaries_clean = []
-    for pair in paired_HLs:    
-        hl_joined = ' '.join(pair[0])
+def make_entry(UCpairs): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each headline with category, WC, CL — this is used for R!
+    entries = []
+    for pair in UCpairs: 
         category = pair[1]
-        word_count = findWC(pair) # word count of headline
-        chara_length = findCL(pair) # character length average of one headline
-        clean_entry = (hl_joined, category, word_count, chara_length)
-        summaries_clean.append(clean_entry)
-    write_file('entry_data.txt', summaries_clean, 'strings')
-    return summaries_clean
+        UChl = pair[0]
+        clean_pair = clean(pair)
+        Chl = clean_pair[0]
+        UCword_count = findWC(pair) # word count of UNCLEAN headline
+        UCchara_length = findCL(pair) # character length of UNCLEAN headline
+        UChl_joined = ' '.join(UChl) # joined UNCLEAN headline
+        Cword_count = findWC(clean_pair) # word count of CLEAN headline
+        Cchara_length = findCL(clean_pair) # character length of CLEAN headline
+        Chl_joined = ' '.join(Chl) # joined CLEAN headline
+        entry = (category, UChl_joined, Chl_joined, UCword_count, Cword_count, UCchara_length, Cchara_length)
+        entries.append(entry)
+    return entries
 
-def find(entries_paired):
+def find(entries_paired): # data search function — can look for particular words, categories, WCs, or CLs
     def choose_search():    
         print('search function activated!')
         print('What are you looking for? --> WORD    CATEGORY      WC     CL')
@@ -203,8 +206,7 @@ def find(entries_paired):
             return captured_words
         if f'{search_choice}'=='category':
             print('What category are you looking for?')
-            inpt = input('Enter category: ')
-            category = inpt.upper()
+            category = input('Enter category: ')
             captured_cat = []
             for entry in entries_paired:
                 if f'{category}' in entry[1]:
@@ -260,44 +262,48 @@ def find(entries_paired):
             print('Done :)')
             return results
     else: print('Nothing found!')
-
-### LISTS ###
+        
+### DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
 
-links = find_type(raw_data, '$A')
-
 headlines = find_type(raw_data, '$B')
-#write_file('HL.txt', headlines, 'strings')
-HLwords = combine(headlines) # all words in all headlines
-total_word_count = len(HLwords)
-writtenHL = find_type(raw_data, '$B', split=False)
-#write_file('headlines_clean.txt', writtenHL, 'strings')
+UC_HL_words = combine(headlines) # all words in headlines
+total_word_count = len(UC_HL_words)
+print('Total word count: ', total_word_count)
+rough_avg_WC = total_word_count/len(headlines) # rough estimate of average word count from all words
+print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
+
+clean_loose_HLs = [clean(hl, paired=False) for hl in headlines]
+HLwords = combine(clean_loose_HLs) # words remaining AFTER CLEAN
+cleaned_word_count = len(HLwords)
+print('Cleaned word count: ', cleaned_word_count)
+clean_avg_WC = cleaned_word_count/len(clean_loose_HLs)
+print('Rough average word count per CLEAN headline: ', clean_avg_WC)
 
 categories_all = find_type(raw_data, '$C', split=False)
 categories = sorted(set(categories_all))
-#write_file('categories.txt', categories, 'strings')
-#category_list = nltk.FreqDist(categories)
-#print(category_list.most_common(5))
-
-descriptions = find_type(raw_data, '$D')
-authors = find_type(raw_data, '$E')
-dates = find_type(raw_data, '$F')
                 
 #### PAIRS ####
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
-categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)  
-#write_file('categorized_clean.txt', categorized_HLs_clean, 'strings')
-
+#write_file('categorized_headlines', categorized_headlines, 'strings')
 entries = make_entry(categorized_headlines)
-#correct_entries = find(all_entries, 'WC')
-search = find(entries)
+write_file('entry_data', entries, 'strings')
+#search = find(entries)
 
-## entries has: (headline, category, word count, character count)
+## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
+
+# TO FIX
+### too many entries with too many numbers, skews avg chara count 
+##### SOLVED — removed stopwords and numbers lmao
+
 ### REGEX 
-# for removing () and ': \('|\)$|'
+# for removing parentheses and apostrophes: \('|\)$|']
 # for hashtags: #[0-9]*[A-Za-z]+[0-9a-zA-Z]+(?=\s)
 # for any all caps terms in parentheses: \([A-Z]+\)
 # for numbers: (?<!\$|:)(?<=\s|^)[0-9]+(?=\s|,|:|\?)(?!:\d)
 
-# TO FIX
-### too many entries with too many numbers, skews avg chara count
+##### EXTRA DATA #####
+links = find_type(raw_data, '$A')
+descriptions = find_type(raw_data, '$D')
+authors = find_type(raw_data, '$E')
+dates = find_type(raw_data, '$F')
