@@ -290,7 +290,7 @@ categorized_HLs_clean = make_pair(raw_data, '$B', '$C', split=False)
 
 entries = make_entry(categorized_headlines)
 #correct_entries = find(all_entries, 'WC')
-test = find(entries)
+search = find(entries)
 
 ## entries has: (headline, category, word count, character count)
 ### REGEX 
@@ -298,3 +298,6 @@ test = find(entries)
 # for hashtags: #[0-9]*[A-Za-z]+[0-9a-zA-Z]+(?=\s)
 # for any all caps terms in parentheses: \([A-Z]+\)
 # for numbers: (?<!\$|:)(?<=\s|^)[0-9]+(?=\s|,|:|\?)(?!:\d)
+
+# TO FIX
+### too many entries with too many numbers, skews avg chara count
