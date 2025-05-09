@@ -356,7 +356,7 @@ categories_all = find_type(raw_data, '$C', split=False)
 cat_dist = nltk.FreqDist(categories_all)
 cat_list = sorted(cat_dist.most_common(10), key=lambda x: x[1], reverse=True)
 full_categories = sorted(cat_dist.most_common(30))
-write_file('categories.txt', full_categories, 'strings')
+write_file('categories', full_categories, 'strings')
 categories = sorted(set(categories_all))
                 
 #### PAIRS ####
