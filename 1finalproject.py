@@ -144,7 +144,7 @@ def clean(entry, paired=True): # cleans headlines — removes numbers, punctuati
                 cleaned_np.append(wor)
         return cleaned_np
 
-def avg(num_list): # find the mean of a list of numbers
+def average(num_list): # find the mean of a list of numbers
     total = 0
     count = 0
     for num in num_list:
@@ -169,7 +169,7 @@ def findCL(entry): # find average character length of words in an entry
             if char.isalpha():
                 count += 1 
         entry_count.append(count)
-    avg = avg(entry_count) # finds the average for that headline; returns one integer
+    avg = average(entry_count) # finds the average for that headline; returns one integer
     return avg
 
 def make_entry(pairs, both=True): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each headline with category, WC, CL — this is used for R!
@@ -190,6 +190,7 @@ def make_entry(pairs, both=True): # INPUT UNCLEAN PAIRS PLEASE — makes entries
             entries.append(entry)
         return entries
     if not both: 
+        print('What type of entry are you making?')
         mode = input('CLEAN or UNCLEAN? Enter: ')
         if f'{mode}'=='clean':
             en = []
@@ -385,7 +386,7 @@ print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
 
 all_HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
 print('number of words AFTER cleaning: ', len(all_HLwords))
-rough_avg_cleanWC = len(all_HLwords)/len()
+rough_avg_cleanWC = len(all_HLwords)/len(cleaned_headlines) # rough estimate of average word count from clean words divided by number of clean headlines
 write_file('all_HLwords', sorted(all_HLwords), 'strings')
 
 HLwords = sorted(list(set(all_HLwords)))
@@ -393,7 +394,7 @@ write_file('HLwords', HLwords, 'strings')
 print('number of unique words: ', len(HLwords))
 
 char_length = [len(w) for w in HLwords] # list of CLs of SET OF ALL WORDS found in headlines
-print(avg(char_length))
+print(average(char_length))
 lengths = [len(s) for s in all_HLwords] # list of CL from ALL WORDS in headlines
 write_file('char_length_data', sorted(lengths), 'strings')
 words_dist = nltk.FreqDist(all_HLwords)
