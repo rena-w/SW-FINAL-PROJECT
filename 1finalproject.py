@@ -330,20 +330,23 @@ def search(entries_paired): # data search function — can look for particular w
 
 ### DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
+write_file('RAW_DATA', raw_data, 'strings')
 
 headlines = find_type(raw_data, '$B')
 UC_HL_words = combine(headlines) # all words in headlines
 #print('unclean word count: ', len(UC_HL_words))
 HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
 set_HLwords = list(set(HLwords))
+write_file('HLwords', set_HLwords, 'single string')
+
 char_length = [len(w) for w in set_HLwords]
-write_file('test_char_len', char_length, 'strings')
+write_file('char_len_data', char_length, 'strings')
 #print('clean word count: ', len(HLwords))
 #print('set of words: ', len(set(HLwords)))
 lengths = [len(s) for s in set_HLwords]
 #write_file('word_lengths', sorted(lengths), 'strings')
 paired_lengths = [(single, len(single)) for single in set_HLwords]
-write_file('paired_lengths', paired_lengths, 'strings')
+#write_file('paired_lengths', paired_lengths, 'strings')
 words_dist = nltk.FreqDist(HLwords)
 #print(sorted(words_dist.most_common(10)))
 lengths_dist = nltk.FreqDist(lengths)
@@ -353,12 +356,16 @@ categories_all = find_type(raw_data, '$C', split=False)
 cat_dist = nltk.FreqDist(categories_all)
 cat_list = sorted(cat_dist.most_common(10), key=lambda x: x[1], reverse=True)
 full_categories = sorted(cat_dist.most_common(30))
+write_file('categories.txt', full_categories, 'strings')
 categories = sorted(set(categories_all))
                 
 #### PAIRS ####
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
+written_catHLs = [(' '.join(entry[0]), entry[1]) for entry in categorized_headlines]
+write_file('categorized_headlines', written_catHLs, 'strings')
 cleaned_headlines = [clean(h) for h in categorized_headlines]
 entries = make_entry(categorized_headlines)
+write_file('entry_data', entries, 'strings')
 #print('number of entries TOTAL: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
 
