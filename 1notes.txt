@@ -12,3 +12,6 @@ MOST COMMON CHARA LENGTHS:
 (10, 45944)
 (11, 23395)
 (12, 11634)
+
+- for CL — need to use SEARCH to find all CLEAN with WC > 2
+- WORD COUNT is found from ALL ITEMS in headlines, including numbers and single letters (i.e., 'a', 'I', etc.)

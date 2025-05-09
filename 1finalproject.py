@@ -12,8 +12,8 @@ def get_lines(file): # get data in form of lines
             lines = input.readlines()
         lines_raw = [line.split() for line in lines] # this gets us each article entry in a separate string
         joined_lines = [' '.join(lin) for lin in lines_raw]
-        chars = str.maketrans({'{':'', '}':'', ',':'', '\"':'','\"':'','?':'', '\'':'', '-':' '})
-        cleaned = [item.translate(chars) for item in joined_lines] # gets rid of punctuation like {} brackets and double quotes ""
+        chars = str.maketrans({'{':'', '}':'', ',':'', '\"':'','\"':'','?':'', '\'':'', '-':' ', '!':'', '.':''})
+        cleaned = [item.translate(chars) for item in joined_lines] # gets rid of punctuation/non alphanumeric characters
         return cleaned
     
     clean = extract_lines(file)  
@@ -124,7 +124,7 @@ def combine(list_of_lists): # combines lists into one list
         merged += lst
     return merged
 
-def clean(entry, paired=True): # cleans headlines — removes numbers and stop words
+def clean(entry, paired=True): # cleans headlines — removes numbers, punctuation, and stop words
     stop_words = set(stopwords.words('english'))
     if paired:
         cleaned_p = []
@@ -144,6 +144,17 @@ def clean(entry, paired=True): # cleans headlines — removes numbers and stop w
                 cleaned_np.append(wor)
         return cleaned_np
 
+def avg(num_list): # find the mean of a list of numbers
+    total = 0
+    count = 0
+    for num in num_list:
+        total += num
+        count += 1
+    if count == 0:
+        return 0
+    average = total / count
+    return average
+
 def findWC(entry): # find how many words in a string in a list
     headline = entry[0]
     WC_value = len(headline)
@@ -158,36 +169,49 @@ def findCL(entry): # find average character length of words in an entry
             if char.isalpha():
                 count += 1 
         entry_count.append(count)
-    avg = average(entry_count) # finds the average for that headline; returns one integer
+    avg = avg(entry_count) # finds the average for that headline; returns one integer
     return avg
 
-def average(num_list): # find the mean of a list of numbers
-    total = 0
-    count = 0
-    for num in num_list:
-        total += num
-        count += 1
-    if count == 0:
-        return 0
-    average = total / count
-    return average
-
-def make_entry(UCpairs): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each headline with category, WC, CL — this is used for R!
-    entries = []
-    for pair in UCpairs: 
-        category = pair[1]
-        UChl = pair[0]
-        clean_pair = clean(pair)
-        Chl = clean_pair[0]
-        UCword_count = findWC(pair) # word count of UNCLEAN headline
-        UCchara_length = findCL(pair) # character length of UNCLEAN headline
-        UChl_joined = ' '.join(UChl) # joined UNCLEAN headline
-        Cword_count = findWC(clean_pair) # word count of CLEAN headline
-        Cchara_length = findCL(clean_pair) # character length of CLEAN headline
-        Chl_joined = ' '.join(Chl) # joined CLEAN headline
-        entry = (category, UChl_joined, Chl_joined, UCword_count, Cword_count, UCchara_length, Cchara_length)
-        entries.append(entry)
-    return entries
+def make_entry(pairs, both=True): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each headline with category, WC, CL — this is used for R!
+    if both:    
+        entries = []
+        for pair in pairs: 
+            category = pair[1]
+            UChl = pair[0]
+            clean_pair = clean(pair)
+            Chl = clean_pair[0]
+            UCword_count = findWC(pair) # word count of UNCLEAN headline
+            UCchara_length = findCL(pair) # character length of UNCLEAN headline
+            UChl_joined = ' '.join(UChl) # joined UNCLEAN headline
+            Cword_count = findWC(clean_pair) # word count of CLEAN headline
+            Cchara_length = findCL(clean_pair) # character length of CLEAN headline
+            Chl_joined = ' '.join(Chl) # joined CLEAN headline
+            entry = (category, UChl_joined, Chl_joined, UCword_count, Cword_count, UCchara_length, Cchara_length)
+            entries.append(entry)
+        return entries
+    if not both: 
+        mode = input('CLEAN or UNCLEAN? Enter: ')
+        if f'{mode}'=='clean':
+            en = []
+            for pair in pairs:
+                cat = pair[1]
+                cleaned = clean(pair)
+                chl = ' '.join(cleaned[0])
+                wc = findWC(cleaned)
+                cl = findCL(cleaned)
+                e = (cat, chl, wc, cl)
+                en.append(e)
+            return en
+        if f'{mode}'=='unclean':
+            entri = []
+            for pair in pairs:
+                cat_ = pair[1]
+                uchl = ' '.join(pair[0])
+                wc_ = findWC(pair)
+                cl_ = findCL(pair)
+                e_ = (cat_, uchl, wc_, cl_)
+                entri.append(e_)
+            return entri
 
 def search(entries_paired): # data search function — can look for particular words, categories, WCs, or CLs 
     print('search function activated!')
@@ -328,69 +352,55 @@ def search(entries_paired): # data search function — can look for particular w
            results_g = result_finding(clean_cl_search)
            return results_g
 
-### DATA ###
+#search_function = search(entries)
+
+### RAW DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
-write_file('RAW_DATA', raw_data, 'strings')
+headlines = find_type(raw_data, '$B') # only the headlines, split into individual words — doesn't have punctuation but DOES have hashtags
 
-headlines = find_type(raw_data, '$B')
-UC_HL_words = combine(headlines) # all words in headlines
-#print('unclean word count: ', len(UC_HL_words))
-HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
-set_HLwords = list(set(HLwords))
-write_file('HLwords', set_HLwords, 'single string')
-
-char_length = [len(w) for w in set_HLwords]
-write_file('char_len_data', char_length, 'strings')
-#print('clean word count: ', len(HLwords))
-#print('set of words: ', len(set(HLwords)))
-lengths = [len(s) for s in set_HLwords]
-#write_file('word_lengths', sorted(lengths), 'strings')
-paired_lengths = [(single, len(single)) for single in set_HLwords]
-#write_file('paired_lengths', paired_lengths, 'strings')
-words_dist = nltk.FreqDist(HLwords)
-#print(sorted(words_dist.most_common(10)))
-lengths_dist = nltk.FreqDist(lengths)
-#print(sorted(lengths_dist.most_common(10)))
-
+### CATEGORIES ###
 categories_all = find_type(raw_data, '$C', split=False)
 cat_dist = nltk.FreqDist(categories_all)
 cat_list = sorted(cat_dist.most_common(10), key=lambda x: x[1], reverse=True)
-full_categories = sorted(cat_dist.most_common(30))
-write_file('categories', full_categories, 'strings')
+category_counts = sorted(cat_dist.most_common(30))
 categories = sorted(set(categories_all))
-                
-#### PAIRS ####
-categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
+
+### PAIRS ###
+categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS TO MAKE ENTRIES ####
 written_catHLs = [(' '.join(entry[0]), entry[1]) for entry in categorized_headlines]
-write_file('categorized_headlines', written_catHLs, 'strings')
 cleaned_headlines = [clean(h) for h in categorized_headlines]
-entries = make_entry(categorized_headlines)
-write_file('entry_data', entries, 'strings')
-#print('number of entries TOTAL: ', len(entries))
+written_cleaned_hls = [(' '.join(entry[0]), entry[1]) for entry in cleaned_headlines]
+
+### ENTRIES ###
+full_entry = make_entry(categorized_headlines) # ORIG / CLEAN COMBINED ENTRIES 
+entries = make_entry(categorized_headlines, both=False) # USEABLE ENTRIES
+print('number of entries TOTAL: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
 
-#search_function = search(entries)
+### WORDS / DATA & NUMBERS ###
+UC_HL_words = combine(headlines) # all words in headlines
+print('total word count (number of words BEFORE cleaning): ', len(UC_HL_words))
+rough_avg_WC = len(UC_HL_words)/len(headlines) # rough estimate of average word count from all words divided by number of headlines
+print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
 
+all_HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
+print('number of words AFTER cleaning: ', len(all_HLwords))
+rough_avg_cleanWC = len(all_HLwords)/len()
+write_file('all_HLwords', sorted(all_HLwords), 'strings')
 
-##### DATA & CALCULATIONS #####
-#print('number of data: ', len([entry[3] for entry in entries]))
-#Ogen_WC = average([entry[3] for entry in entries])
-#print('original avg wc: ', Ogen_WC)
-#Cgen_WC = average([entry[4] for entry in entries])
-#print('clean avg wc: ', Cgen_WC)
-#Ogen_CL = average([entry[5] for entry in entries])
-#print('original avg cl: ', Ogen_CL)
-#Cgen_CL = average([entry[6] for entry in entries])
-#print('clean avg cl: ', Cgen_CL)
+HLwords = sorted(list(set(all_HLwords)))
+write_file('HLwords', HLwords, 'strings')
+print('number of unique words: ', len(HLwords))
 
-total_word_count = len(UC_HL_words) # 2033302
-#print('Total word count: ', total_word_count) 
-rough_avg_WC = total_word_count/len(headlines) # rough estimate of average word count from all words
-#print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
-cleaned_word_count = len(HLwords) # 
-#print('Cleaned word count: ', cleaned_word_count)
-clean_avg_WC = cleaned_word_count/len(HLwords)
-
+char_length = [len(w) for w in HLwords] # list of CLs of SET OF ALL WORDS found in headlines
+print(avg(char_length))
+lengths = [len(s) for s in all_HLwords] # list of CL from ALL WORDS in headlines
+write_file('char_length_data', sorted(lengths), 'strings')
+words_dist = nltk.FreqDist(all_HLwords)
+print('10 most common words: ', sorted(words_dist.most_common(10)))
+lengths_dist = nltk.FreqDist(lengths)
+print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
+                
 ### REGEX 
 # for removing parentheses and apostrophes: \('|\)$|']
 # for hashtags: #[0-9]*[A-Za-z]+[0-9a-zA-Z]+(?=\s)
