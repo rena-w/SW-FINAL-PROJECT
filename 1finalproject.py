@@ -131,7 +131,7 @@ def clean(entry, paired=True): # cleans headlines — removes numbers and stop w
         headline = entry[0]
         for word in headline: 
             w = word.lower()
-            if w.isalpha() and w not in stop_words:
+            if w.isalpha() and w not in stop_words and len(w)>1:
                 cleaned_p.append(word)
         results = (cleaned_p, entry[1])
         return results
@@ -140,7 +140,7 @@ def clean(entry, paired=True): # cleans headlines — removes numbers and stop w
         hl = entry    
         for wor in hl:
             wo = wor.lower()
-            if wo.isalpha() and wo not in stop_words:
+            if wo.isalpha() and wo not in stop_words and len(wo)>1:
                 cleaned_np.append(wor)
         return cleaned_np
 
@@ -189,7 +189,7 @@ def make_entry(UCpairs): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each 
         entries.append(entry)
     return entries
 
-def find(entries_paired): # data search function — can look for particular words, categories, WCs, or CLs 
+def search(entries_paired): # data search function — can look for particular words, categories, WCs, or CLs 
     print('search function activated!')
     print('What are you looking for? --> WORD    CATEGORY      WC     CL')
     variable = input('Enter search: ')
@@ -327,33 +327,46 @@ def find(entries_paired): # data search function — can look for particular wor
            clean_cl_search = CL_search(entries_paired, original=False)
            results_g = result_finding(clean_cl_search)
            return results_g
-        
+
 ### DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
 
 headlines = find_type(raw_data, '$B')
 UC_HL_words = combine(headlines) # all words in headlines
-print('unclean word count: ', len(UC_HL_words))
-clean_loose_HLs = [clean(hl, paired=False) for hl in headlines]
-HLwords = combine(clean_loose_HLs) # words remaining AFTER CLEAN
-print('clean word count: ', len(HLwords))
-print('set of words: ', len(set(HLwords)))
+#print('unclean word count: ', len(UC_HL_words))
+HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
+set_HLwords = list(set(HLwords))
+char_length = [len(w) for w in set_HLwords]
+write_file('test_char_len', char_length, 'strings')
+#print('clean word count: ', len(HLwords))
+#print('set of words: ', len(set(HLwords)))
+lengths = [len(s) for s in set_HLwords]
+#write_file('word_lengths', sorted(lengths), 'strings')
+paired_lengths = [(single, len(single)) for single in set_HLwords]
+write_file('paired_lengths', paired_lengths, 'strings')
+words_dist = nltk.FreqDist(HLwords)
+#print(sorted(words_dist.most_common(10)))
+lengths_dist = nltk.FreqDist(lengths)
+#print(sorted(lengths_dist.most_common(10)))
 
 categories_all = find_type(raw_data, '$C', split=False)
+cat_dist = nltk.FreqDist(categories_all)
+cat_list = sorted(cat_dist.most_common(10), key=lambda x: x[1], reverse=True)
+full_categories = sorted(cat_dist.most_common(30))
 categories = sorted(set(categories_all))
                 
 #### PAIRS ####
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS!!!! ####
 cleaned_headlines = [clean(h) for h in categorized_headlines]
 entries = make_entry(categorized_headlines)
-print('number of entries TOTAL: ', len(entries))
+#print('number of entries TOTAL: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
 
-#search = find(entries)
+#search_function = search(entries)
 
 
 ##### DATA & CALCULATIONS #####
-print('number of data: ', len([entry[3] for entry in entries]))
+#print('number of data: ', len([entry[3] for entry in entries]))
 #Ogen_WC = average([entry[3] for entry in entries])
 #print('original avg wc: ', Ogen_WC)
 #Cgen_WC = average([entry[4] for entry in entries])
@@ -369,9 +382,7 @@ rough_avg_WC = total_word_count/len(headlines) # rough estimate of average word 
 #print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
 cleaned_word_count = len(HLwords) # 
 #print('Cleaned word count: ', cleaned_word_count)
-clean_avg_WC = cleaned_word_count/len(clean_loose_HLs)
-#print('Rough average word count per CLEAN headline: ', clean_avg_WC)
-
+clean_avg_WC = cleaned_word_count/len(HLwords)
 
 ### REGEX 
 # for removing parentheses and apostrophes: \('|\)$|']
