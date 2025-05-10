@@ -262,7 +262,6 @@ HA: `proportion(words(population)) != proportion(words(insert_category))`
 **Code used for testing:** `chisq.test(expected_proportions, sample_proportions)`
 
 # RESULTS
-*A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*
 
 ## Part 1 results
 For all tests, I used the typical significance level of 0.05.
@@ -278,11 +277,11 @@ Since p-value is much smaller than our significance level of 0.05, we **reject**
 
 I performed Tukey's Test as a response to the statistically significant results of ANOVA using `post_test <- TukeyHSD(topten_aov, conf.level = 0.95)`. This test compared the top 10 categories, with 45 unique pairings, looking to see if there was a significant difference between the means of each pair. 
 
-The [results of the test]() showed that the majority of comparisons were statistically significant: 
+The [results of the test](https://github.com/rena-w/SW-FINAL-PROJECT/blob/main/tukey_results.txt) showed that the majority of comparisons were statistically significant: 
 
-- 37 out of 45 pairings had a **p-value of less than 0.05**. 
+- 37 out of 45 pairings had a **p-value of less than 0.05**, so the null hypothesis was successfully rejected in the majority of comparisons. 
 
-The 8 pairings that had a **p-value greater than 0.05** are listed below, in order from largest p-value to smallest:
+The 8 pairings that had a **p-value greater than 0.05** and ***failed*** to reject the null hypothesis are listed below, in order from largest p-value to smallest:
 |Category 1|Category 2|p-value|
 |:---|:---|:---|
 |PARENTING|ENTERTAINMENT & MEDIA|0.9966326|
@@ -298,32 +297,84 @@ The 8 pairings that had a **p-value greater than 0.05** are listed below, in ord
 ### One-Sample t-tests
 Each t-test was conducted using the same three lines of code: 
 1. `t.test(x=insert_category_CL, mu=5.975, alternative="two.sided")` — this two-sided test returned whether or not the sample mean was equal to the population mean of **5.975**.
-2. `t.test(x=polcl, mu=5.975, alternative="greater")` — the right-tailed test was conducted first, though there was no reason for that.
+2. `t.test(x=polcl, mu=5.975, alternative="greater")` — the right-tailed test was conducted first, though there was no real reason for the order.
 3. `t.test(x=polcl, mu=5.975, alternative="less")` — by the end of the third test, the results would show if the comparison was statistically significant or not.
 
-The results of the two-sided tests on the top 10 categories confirmed the results of ANOVA, giving significant evidence: the sample means were not equal to the population mean. Further testing with right- and left-tailed tests showed that there was a 50/50 split: 5 categories had an **average CL that was greater than the population mean** and 5 categories had an **average CL that was less than the population mean**. 
+The results of the two-sided tests on the top 10 categories confirmed the results of ANOVA, giving significant evidence: the sample means were not equal to the population mean, rejecting the null hypothesis in all 10 cases. Further testing with right- and left-tailed tests showed that there was a 50/50 split: 5 categories had an **average CL that was greater than the population mean** and 5 categories had an **average CL that was less than the population mean**. 
 - They are listed here:
     
     **GREATER**: POLITICS, HEALTH & WELLNESS, TRAVEL,  WORLD NEWS, BUSINESS & ECONOMY
     
     **LESS**: ENTERTAINMENT & MEDIA, PARENTING, STYLE & BEAUTY, FOOD & DRINK, QUEER VOICES
 
-Categories that were confirmed to be **greater** than the population mean had a **p-value of 1** for the left-tailed test and a **p-value of 0.0000000000000002** for the right-tailed test.
+Categories that were confirmed to be **greater** than the population mean had a **p-value of 1**, failing to reject the null hypothesis for the left-tailed test and a **p-value of 0.0000000000000002**, successfully rejecting the null hypothesis for the right-tailed test.
 
-With the exception of **QUEER VOICES**, which had a **p-value of 0.0000007369** for the left-tailed test, categories that were confirmed to be **less** than the population mean had a **p-value of 0.0000000000000002** for the left-tailed test and a **p-value of 1** for the right-tailed test.  
+With the exception of **QUEER VOICES**, which had a **p-value of 0.0000007369**, rejecting the null hypothesis for the left-tailed test, categories that were confirmed to be **less** than the population mean had a **p-value of 0.0000000000000002**, rejecting the null hypothesis for the left-tailed test and a **p-value of 1**, failing to reject the null hypothesis for the right-tailed test.  
 
 ### Chi-Square Goodness-of-Fit
-Using the population proportions of 0.277, 0.707, and 0.015, each sample was compared to the expected proportions using `chisq.test(expected_prop, sample_prop)`. The [results]() of all 10 tests were insignificant, all yielding the same result.
+Using the population proportions of 0.277, 0.707, and 0.015, each sample was compared to the expected proportions using `chisq.test(expected_prop, sample_prop)`. The [results](https://github.com/rena-w/SW-FINAL-PROJECT/blob/main/chi_sq_results) of all 10 tests were insignificant, all yielding the same result.
 
 X-Squared = 6, *df* = 4, **p-value = 0.1991**
 
+Since the p-value of 0.1991 > significance level 0.05, fail to reject the null hypothesis in all 10 cases. There is *not enough strong statistical evidence* to conclude that the proportions of short, medium, and long words of each category are different from the proportion of the population.
+
 # ANALYSIS
-*This is where you can go into more detail about what the results mean, and what significance they hold in relation to the subject area and the question you set out to answer.*
+To discuss my findings and give some of my analysis, I am bringing back the guiding questions from the beginning of this writeup:
 
-If the tests fail to reject H0 for all 10 categories being tested, meaning that the proportions of short, medium, and long words is the same across the board, then that is statistical evidence that the genre of an article has no bearing on the amount of long words in its headline.
+1. Is there a difference in average length of words (in characters) between different categories/genres of articles?
+2. What is considered a 'long word' in the context of news headlines?
+3. Do writers avoid using long words in their titles? 
+4. Are long words more likely to appear in particular categories of articles? Why?
+5. Does the word count of a headline have an impact on the length of words within it? (i.e., if a headline has more words, are those less likely to be long words because the headline itself is already long?) 
 
-### **Potential sources of error / things that could be improved**
-During the cleaning process, there were many different items that I felt I needed to account for. One of these seemed particularly pressing: names. Because of the nature of news articles, proper nouns are much more likely to appear. In fact, the words 'Trump' and 'Donald' are #1 and #3 in the top 10 most common words, with 10,585 and 4,835 instances respectively. Although it could just be reflective of when these headlines were written, it still seems reasonable to assume that the appearance of proper nouns is influencing the average word count and character lengths. 
+Pieces of information such as the summary statistics gathered during this project, the tests I've run, as well as observations about the nature of the data itself all contribute to my attempt at answering these questions. 
+
+### Q1: average CL across categories
+The statistical significance of the ANOVA results showed that there is definitely variability between the categories — the tiny p-value of 0.00....2 clearly states that there is strong evidence of different averages in different categories. After seeing that result, conducting the follow-up test between each pair in the top 10 categories revealed that some of the categories were very similar. 
+
+Some of these pairs were unsurprising and made a lot of sense, like BUSINESS & ECONOMY and POLITICS. These two genres share a lot of vocabulary and often overlap in subject matter, so it makes sense that the style of headlines would share similarities as well. Other pairs were more surprising. For me, the most surprising pair was ***PARENTING*** and ***ENTERTAINMENT & MEDIA***. Those two genres feel like they should have drastically different energies, yet the data shows us that at least in this one aspect, they are the most similar pair, with a **p-value of 0.996** that asserts that the average word length is essentially identical between the two categories.
+
+From the first two tests, it seems that we can conclude the majority of categories, at least in the top 10, have average word lengths that are consistently very different from each other. Overall, this answers my first question and confirms that yes, average CL of a headline may be impacted or dependent in some way on the genre and content of the article it titles. 
+
+### Q2: the definition of a 'long word'
+In the process of preparing for the latter two tests, I calculated the descriptive statistics for the combined list of all words in every headline, which I treated as the master list and the representative of the whole population. While I definitely think there are a lot of issues that I ignored or brushed over, which I will address later in this section, the statistics I found were useful for interpreting the data. 
+
+Addressing Q2 in particular, I thought that using the formula used to find outliers would be a good way to identify words that seemed to be abnormally long. In the first iteration of my analysis (in my presentation), I had used a dataset consisting of uncleaned data for my statistics, and thus had found an IQR value that was very small. This was likely due to the abundance of very short words like "as", "it", "to", and other stopwords. These results were quite misleading, and so the summary statistics from the cleaned data were a little surprising at first. The value of 11 letters as the definition of a long word in the context of news article headlines does sound reasonable, though there are, again, many factors that I did not control for that are likely influencing my data.
+
+Finally, another aspect of this project that I didn't get a chance to explore was comparing the frequency of a long word in the headlines dataset to the frequency of that word in other forms of prose. I would've liked to investigate if there were any patterns between different forms of writing. A guess I have would be that there is a strong association between frequency of usage in general prose and frequency of usage in headlines, since authors would want to make the most of the readers' familiarity with vocabulary and choose words that people are more likely to understand.
+
+### Q3: avoidance of long words
+Going off of our definition established from Q2, I found a potential answer to Q3 in the data for the chi-squared tests. Because I had sorted the quantitative CLs into three ranges to find the proportion of each length, it was also a really good way to observe how dramatic the difference was between each length and each category. As illustrated in [the results of the chi-squared tests](https://github.com/rena-w/SW-FINAL-PROJECT/blob/main/chi_sq_results), both through the bare counts and through the percentages, it is very clear that authors do avoid using long words, or at least use them very, very sparingly. This makes sense and also agrees with the other analysis from this project.  
+
+### Q4: probability and frequency of long word occurrences
+One thought I had while going about my initial research and data observations was about the content of each genre. I commented about this as part of the answer for Q1, but the frequency data from each category also gave some more strength to a potential argument. The category with the most long words was HEALTH & WELLNESS with 18 long words. HEALTH & WELLNESS is category that I would associate with more calm, informative writing that may be aimed at a different audience than something like ENTERTAINMENT & MEDIA; however, some of the other data looks like it could be contradictory, since the category with the second most long words is POLITICS, which I don't perceive as being very calm.
+
+The chi-squared tests were specifically meant to answer Q4, which asked about the probability that long words would appear, and if there was any difference between category. The conditions for the tests were that tf the tests fail to reject H0 for all 10 categories being tested, meaning that the proportions of short, medium, and long words is the same across the board, then the results provide statistical evidence that the genre of an article has no bearing on the *amount* of long words in its headline. These results also suggests that long words are not more likely to be in any category, since the proportions are all essentially the same. 
+
+As seen above, the results of my chi-squared tests were exactly this, and it pretty much answers Q4. For these 10 categories, there is no relation or pattern between category and likelihood of long words appearing. I wasn't expecting any specific results from this test, though it was a little surprising to see the exact same numbers for nearly all 10 categories.
+
+### Q5: the relationship between word count and word length
+Unfortunately, the question I didn't seem to find any traction on was question 5 regarding the relationship of word count and character length. Given more time, I think that the way I've organized this dataset and the code I've come up with would make it very easy to investigate this, but because I wanted to limit the scope of this project and also the length of this writeup, I decided not to pursue that topic at the moment. It would be very interesting to see if there's any evidence to suggest a kind of balance or compromise being made during the writing of a headline; in other words, do authors decide to sacrifice some of their already limited word count so they can use a long word?
+
+### Analysis conclusion:
+The results from the statistical testing were pretty uniform and fit together pretty well, without much contradiction. It was a little confusing, since the first two tests and the last two targeted a different aspect of word length, but the results for both types of tests not only didn't clash, but do seem to complement each other. In conclusion, while some of the statistical results weren't the most exciting, this project provided a good basis of information to build off of and form more hypotheses based on these more general calculations.
+
+## **Potential sources of error / things that could be improved**
+I've mentioned many times throughout this write-up that I would talk about potential sources of error or confounding factors that were likely influencing the data. In this section, I will list and talk about some of the things that were on my mind while I was working through the data and during statistical testing. I would like to try and give suggestions or explanations of how I might approach them if I were to conduct this study again or continue investigating this dataset, but some of these were quite tricky and I spent a while puzzling over the data, trying to figure them out.
+
+During the cleaning process, there were many different items that I felt I needed to account for. One of these seemed particularly pressing: names. Because of the nature of news articles, proper nouns are much more likely to appear. In fact, the words 'Trump' and 'Donald' are #1 and #3 in the top 10 most common words, with 10,585 and 4,835 instances respectively. For names specifically, this frequency of proper nouns is probably most prevalent in categories like POLITICS and ENTERTAINMENT & MEDIA, where famous persons, celebrities, and other names are featured in nearly every headline. Regarding the example of 'Donald' and 'Trump'; although it could just be reflective of when these headlines were written, it still seems reasonable to assume that the appearance of proper nouns is influencing the average word count and character lengths. 
+
+However, other proper nouns that were causing some concern and curiosity were place names — in particular, country names. In the top 10 most common words, the two-letter word 'us' appears with 3190 entries. When I first saw this, I was worried that my `clean ()` function or even my `get_lines()` function were messing up the data and converting terms like 'U.S.' into lowercase 'us', since I used them to remove punctuation and sort through stopwords, which requires tokenization first. This also brings up the problem of all-caps terms like USA or NASA. At the bottom of [1finalproject.py](), I have a few RegEx patterns that I used when scouring data after a cleaning attempt. At one point, I was hoping to be able to write a function that let me choose what non-standard terms I wanted to keep and which to remove. I have a mini version of that in `make_entry()`, since it gives you a choice of making full, combined entries, which have the original and cleaned versions of everything, clean entries, which are the entries I used for this analysis, or original entries that are the same as the original data, just without punctuation or problematic characters. 
+
+Finally, I mentioned wanting to try POS-tagging if I had the time, and unfortunately I didn't have the opportunity to do any analysis of parts of speech or lexical categories. If I had access to these labels during my data analysis, it may have helped me clean the data a bit easier and ease my concerns about the interference of proper nouns. 
 
 # CONCLUSION
 *This can be fairly short. Briefly re-state the high-level takeaways from your project, as well as a few ideas of how the research direction could be continued/improved in future work.*
+
+During this project, I'd hoped to explore several aspects of this topic, which is reflected in the questions I've asked, but most of all I wanted to do cross-category comparisons. The biggest conclusions I would draw from my analysis is that there is strong variability of average word length between different genres of journalism; that result was statistically very strong and provides a good base to form deeper research questions. 
+
+The clear main question I can see directly stemming from the results of this project is looking into the relationship between word count and character length, as I've emphasized many times in my writing. Another good research topic would be the location of long words within each headline; whether they tend to appear at the beginning, middle, or end of headlines. This topic can then be expanded to consider the role of word count and subject matter of the article, to name a few other interesting variables.
+
+There are also other data that I didn't use at all. For example, variables that are completely untouched and unacknowledged by this writeup — there is a column with the publication date of each article, which you could use to look at patterns of word usage or headline structure throughout different times of the year, or at specific holidays and events. Since this dataset is from a single newspaper, it does limit the scope a bit. However, the data is from a pretty big range of years, with a lot of change that occurred during that timespan, so I think there is a good amount of diversity in this dataset to explore some other aspects of news and journalism as well.
+
+I talked about improvements to the research questions and methods in the previous section during my discussion of sources of error. I also have some suggestions about how to approach research projects that deal with very large datasets. One big thing that I would emphasize for myself is to not over-complicate things, even if it's fun. I liked writing the code for this project and I'm really happy with how some of my functions are working (especially `search()`!!) but it was a bit time-consuming and took me away from actually working with the data.
