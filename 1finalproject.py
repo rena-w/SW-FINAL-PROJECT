@@ -173,37 +173,44 @@ def findCL(entry): # find average character length of words in an entry
     return avg
 
 def make_entry(pairs, both=True): # INPUT UNCLEAN PAIRS PLEASE — makes entries of each headline with category, WC, CL — this is used for R!
-    if both:    
+    if both: # want entries with both UNCLEAN and CLEAN data   
         entries = []
         for pair in pairs: 
             category = pair[1]
             UChl = pair[0]
             clean_pair = clean(pair)
             Chl = clean_pair[0]
-            UCword_count = findWC(pair) # word count of UNCLEAN headline
-            UCchara_length = findCL(pair) # character length of UNCLEAN headline
-            UChl_joined = ' '.join(UChl) # joined UNCLEAN headline
-            Cword_count = findWC(clean_pair) # word count of CLEAN headline
-            Cchara_length = findCL(clean_pair) # character length of CLEAN headline
-            Chl_joined = ' '.join(Chl) # joined CLEAN headline
-            entry = (category, UChl_joined, Chl_joined, UCword_count, Cword_count, UCchara_length, Cchara_length)
-            entries.append(entry)
+            if len(Chl) > 1:
+                UCword_count = findWC(pair) # word count of UNCLEAN headline
+                UCchara_length = findCL(pair) # character length of UNCLEAN headline
+                UChl_joined = ' '.join(UChl) # joined UNCLEAN headline
+                Cword_count = findWC(clean_pair) # word count of CLEAN headline
+                Cchara_length = findCL(clean_pair) # character length of CLEAN headline
+                Chl_joined = ' '.join(Chl) # joined CLEAN headline
+                entry = (category, UChl_joined, Chl_joined, UCword_count, Cword_count, UCchara_length, Cchara_length)
+                entries.append(entry)
+            else: 
+                continue
         return entries
     if not both: 
-        print('What type of entry are you making?')
-        mode = input('CLEAN or UNCLEAN? Enter: ')
-        if f'{mode}'=='clean':
+        print('CLEAN or UNCLEAN?')
+        inpt = input('Enter type of data: ')
+        if f'{inpt}'=='clean':     
             en = []
             for pair in pairs:
                 cat = pair[1]
                 cleaned = clean(pair)
-                chl = ' '.join(cleaned[0])
-                wc = findWC(cleaned)
-                cl = findCL(cleaned)
-                e = (cat, chl, wc, cl)
-                en.append(e)
+                chl = cleaned[0]
+                if len(chl) > 1:
+                    chl_join = ' '.join(cleaned[0])
+                    wc = findWC(cleaned)
+                    cl = findCL(cleaned)
+                    e = (cat, chl_join, wc, cl)
+                    en.append(e)
+                else:
+                    continue
             return en
-        if f'{mode}'=='unclean':
+        if f'{inpt}'=='unclean':
             entri = []
             for pair in pairs:
                 cat_ = pair[1]
@@ -218,19 +225,27 @@ def search(entries_paired): # data search function — can look for particular w
     print('search function activated!')
     print('What are you looking for? --> WORD    CATEGORY      WC     CL')
     variable = input('Enter search: ')
-    def word_search(entries_lista, original=True):
+    def word_search(entries_lista, both=True):
         print('What word(s) are you looking for?')
         target = str(input('Enter target word(s): '))    
-        if original:   
-            captured_Owords = []
-            for ee in entries_lista:
-                if target in ee[1]: captured_Owords.append(ee)
-            return captured_Owords
-        if not original:   
-            captured_Cwords = []
-            for rr in entries_lista:
-                if target in rr[2]: captured_Cwords.append(rr)
-            return captured_Cwords
+        if both:   
+            print('Searching ORIGINAL or CLEAN data?')
+            inp = input('Enter data type: ')
+            if f'{inp}'=='original':
+                captured_Owords = []
+                for ee in entries_lista:
+                    if target in ee[1]: captured_Owords.append(ee)
+                return captured_Owords
+            if f'{inp}'=='clean':
+                captured_Owords = []
+                for nn in entries_lista:
+                    if target in nn[2]: captured_Owords.append(nn)
+                return captured_Owords
+        if not both:   
+            captured_words = []
+            for ww in entries_lista:
+                if target in ww[1]: captured_words.append(ww)
+            return captured_words
     def category_search(entries_listb):
         print('What category are you looking for?')
         inpt = input('Enter category: ')
@@ -240,72 +255,108 @@ def search(entries_paired): # data search function — can look for particular w
             if f'{category}' in eee[0]:
                 captured_cat.append(eee)
         return captured_cat
-    def WC_search(entries_listc, original=True):
+    def WC_search(entries_listc, both=True):
         condition = input('WC is (greater than > / less than < / equal to =) ')
         wc_limit = int(input('Enter number: '))
-        if original:
-            captured_origWC = []
+        if both:
+            print('Searching ORIGINAL or CLEAN data?')
+            inpt = input('Enter data type: ')
+            if f'{inpt}'=='original':
+                captured_origWC = []
+                if f'{condition}'=='>':    
+                    for e in entries_listc:    
+                        if e[3] > wc_limit:
+                            captured_origWC.append(e)
+                if f'{condition}'=='<':
+                    for n in entries_listc:
+                        if n[3] < wc_limit:
+                            captured_origWC.append(n)
+                if f'{condition}'=='=':
+                    for t in entries_listc:    
+                        if t[3] == wc_limit:
+                            captured_origWC.append(t)
+                return captured_origWC
+            if f'{inpt}'=='clean':
+                captured_cleanWC = []
+                if f'{condition}'=='>':    
+                    for r in entries_listc:    
+                        if r[4] > wc_limit:
+                            captured_cleanWC.append(r)
+                if f'{condition}'=='<':
+                    for i in entries_listc:
+                        if i[4] < wc_limit:
+                            captured_cleanWC.append(i)
+                if f'{condition}'=='=':
+                    for eeee in entries_listc:    
+                        if eeee[4] == wc_limit:
+                            captured_cleanWC.append(eeee)
+                return captured_cleanWC
+        if not both:
+            captured_WC = []
             if f'{condition}'=='>':    
-                for e in entries_listc:    
-                    if e[3] > wc_limit:
-                        captured_origWC.append(e)
+                for rrrrr in entries_listc:    
+                    if rrrrr[2] > wc_limit:
+                        captured_WC.append(rrrrr)
             if f'{condition}'=='<':
-                for n in entries_listc:
-                    if n[3] < wc_limit:
-                        captured_origWC.append(n)
+                for iiiii in entries_listc:
+                    if iiiii[2] < wc_limit:
+                        captured_WC.append(iiiii)
             if f'{condition}'=='=':
-                for t in entries_listc:    
-                    if t[3] == wc_limit:
-                        captured_origWC.append(t)
-            return captured_origWC
-        if not original:
-            captured_cleanWC = []
-            if f'{condition}'=='>':    
-                for r in entries_listc:    
-                    if r[4] > wc_limit:
-                        captured_cleanWC.append(r)
-            if f'{condition}'=='<':
-                for i in entries_listc:
-                    if i[4] < wc_limit:
-                        captured_cleanWC.append(i)
-            if f'{condition}'=='=':
-                for eeee in entries_listc:    
-                    if eeee[4] == wc_limit:
-                        captured_cleanWC.append(eeee)
-            return captured_cleanWC
-    def CL_search(entries_listd, original=True):
+                for eeeee in entries_listc:    
+                    if eeeee[2] == wc_limit:
+                        captured_WC.append(eeeee)
+            return captured_WC
+    def CL_search(entries_listd, both=True):
         condition = input('CL is (greater than > / less than < / equal to =) ')
         cl_limit = int(input('Enter number: '))
-        if original:    
-            captured_origCL = []
-            if f'{condition}'=='>':    
-                for e in entries_listd:
-                    if e[5] > cl_limit:
-                        captured_origCL.append(e)
-            if f'{condition}'=='<':
-                for n in entries_listd:
-                    if n[5] < cl_limit:
-                        captured_origCL.append(n)
-            if f'{condition}'=='=':
-                for t in entries_listd:
-                    if t[5] == cl_limit:
-                        captured_origCL.append(t)
-            return captured_origCL
-        if not original:
-            captured_cleanCL = []
-            if f'{condition}'=='>':    
-                for r in entries_listd:
-                    if r[6] > cl_limit:
-                        captured_cleanCL.append(r)
-            if f'{condition}'=='<':
-                for i in entries_listd:
-                    if i[6] < cl_limit:
-                        captured_cleanCL.append(i)
-            if f'{condition}'=='=':
-                for s in entries_listd:
-                    if s[6] == cl_limit:
-                        captured_cleanCL.append(s)
-            return captured_cleanCL
+        if both:    
+            print('Searching ORIGINAL or CLEAN data?')
+            inpt = input('Enter data type: ')
+            if f'{inpt}'=='original':
+                captured_origCL = []
+                if f'{condition}'=='>':    
+                    for e in entries_listd:
+                        if e[5] > cl_limit:
+                            captured_origCL.append(e)
+                if f'{condition}'=='<':
+                    for n in entries_listd:
+                        if n[5] < cl_limit:
+                            captured_origCL.append(n)
+                if f'{condition}'=='=':
+                    for t in entries_listd:
+                        if t[5] == cl_limit:
+                            captured_origCL.append(t)
+                return captured_origCL
+            if f'{inpt}'=='clean':
+                captured_cleanCL = []
+                if f'{condition}'=='>':    
+                    for r in entries_listd:
+                        if r[6] > cl_limit:
+                            captured_cleanCL.append(r)
+                if f'{condition}'=='<':
+                    for i in entries_listd:
+                        if i[6] < cl_limit:
+                            captured_cleanCL.append(i)
+                if f'{condition}'=='=':
+                    for s in entries_listd:
+                        if s[6] == cl_limit:
+                            captured_cleanCL.append(s)
+                return captured_cleanCL
+        if not both:
+                captured_CL = []
+                if f'{condition}'=='>':    
+                    for aaaaa in entries_listd:
+                        if aaaaa[6] > cl_limit:
+                            captured_CL.append(aaaaa)
+                if f'{condition}'=='<':
+                    for bbbb in entries_listd:
+                        if bbbb[6] < cl_limit:
+                            captured_CL.append(bbbb)
+                if f'{condition}'=='=':
+                    for cccc in entries_listd:
+                        if cccc[6] == cl_limit:
+                            captured_CL.append(cccc)
+                return captured_CL
     def result_finding(results):
         if len(results) != 0:
             print('Found! Would you like to write to a file?')
@@ -319,87 +370,109 @@ def search(entries_paired): # data search function — can look for particular w
                 return results
         else: print('Nothing found!')
     if f'{variable}'=='word':       
-        loc = input('Searching ORIGINAL or CLEAN? Enter: ')
-        if f'{loc}'=='original':
-            orig_word_search = word_search(entries_paired, original=True)
-            results_a = result_finding(orig_word_search)
+        loc = input('Does this dataset contain more than one kind of data? Y/N: ')
+        if f'{loc}'=='y':
+            both_word_search = word_search(entries_paired, both=True)
+            results_a = result_finding(both_word_search)
             return results_a
-        if f'{loc}'=='clean':
-            clean_word_search = word_search(entries_paired, original=False)
-            results_b = result_finding(clean_word_search)
+        if f'{loc}'=='n':
+            single_word_search = word_search(entries_paired, both=False)
+            results_b = result_finding(single_word_search)
             return results_b
     if f'{variable}'=='category':
         category_search_ = category_search(entries_paired)
         results_c = result_finding(category_search_)
         return results_c
     if f'{variable}' == 'WC':
-        lo = input('Searching ORIGINAL or CLEAN? Enter: ')
-        if f'{lo}'=='original':
-            orig_wc_search = WC_search(entries_paired, original=True)
-            results_d = result_finding(orig_wc_search)
+        lo = input('Does this dataset contain more than one kind of data? Y/N: ')
+        if f'{lo}'=='y':
+            both_wc_search = WC_search(entries_paired, both=True)
+            results_d = result_finding(both_wc_search)
             return results_d
-        if f'{lo}'=='clean':
-            clean_wc_search = WC_search(entries_paired, original=False)
-            results_e = result_finding(clean_wc_search)
+        if f'{lo}'=='n':
+            single_wc_search = WC_search(entries_paired, both=False)
+            results_e = result_finding(single_wc_search)
             return results_e
     if f'{variable}'=='CL':
-        l = input('Searching ORIGINAL or CLEAN? Enter: ')
-        if f'{l}'=='original':
-           orig_cl_search = CL_search(entries_paired, original=True)
-           results_f = result_finding(orig_cl_search)
+        l = input('Does this dataset contain more than one kind of data? Y/N: ')
+        if f'{l}'=='y':
+           both_cl_search = CL_search(entries_paired, both=True)
+           results_f = result_finding(both_cl_search)
            return results_f
-        if f'{l}'=='clean':
-           clean_cl_search = CL_search(entries_paired, original=False)
-           results_g = result_finding(clean_cl_search)
+        if f'{l}'=='n':
+           single_cl_search = CL_search(entries_paired, both=False)
+           results_g = result_finding(single_cl_search)
            return results_g
 
 #search_function = search(entries)
 
 ### RAW DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
+write_file('RAW_DATA', raw_data, 'strings')
 headlines = find_type(raw_data, '$B') # only the headlines, split into individual words — doesn't have punctuation but DOES have hashtags
+print('number of raw headlines TOTAL: ', len(headlines))
 
 ### CATEGORIES ###
 categories_all = find_type(raw_data, '$C', split=False)
 cat_dist = nltk.FreqDist(categories_all)
 cat_list = sorted(cat_dist.most_common(10), key=lambda x: x[1], reverse=True)
 category_counts = sorted(cat_dist.most_common(30))
+write_file('category_counts', category_counts, 'strings')
 categories = sorted(set(categories_all))
 
 ### PAIRS ###
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS TO MAKE ENTRIES ####
 written_catHLs = [(' '.join(entry[0]), entry[1]) for entry in categorized_headlines]
+write_file('categorized_headlines', written_catHLs, 'strings')
 cleaned_headlines = [clean(h) for h in categorized_headlines]
-written_cleaned_hls = [(' '.join(entry[0]), entry[1]) for entry in cleaned_headlines]
+written_cleanedHLs = [(' '.join(entry[0]), entry[1]) for entry in cleaned_headlines]
+write_file('cleaned_headlines', written_cleanedHLs, 'strings')
 
 ### ENTRIES ###
 full_entry = make_entry(categorized_headlines) # ORIG / CLEAN COMBINED ENTRIES 
+write_file('full_entries', full_entry, 'strings')
+print('making CLEAN entries!!!')
 entries = make_entry(categorized_headlines, both=False) # USEABLE ENTRIES
-print('number of entries TOTAL: ', len(entries))
+write_file('entries', entries, 'strings')
+print('number of USEABLE entries: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
+
+print('TEST: making UNCLEAN ENTRIES')
+unclean_entries = make_entry(categorized_headlines, both=False)
+print('total number of entries: ', len(unclean_entries))
 
 ### WORDS / DATA & NUMBERS ###
 UC_HL_words = combine(headlines) # all words in headlines
-print('total word count (number of words BEFORE cleaning): ', len(UC_HL_words))
-rough_avg_WC = len(UC_HL_words)/len(headlines) # rough estimate of average word count from all words divided by number of headlines
-print('Rough average word count per UNCLEAN headline: ', rough_avg_WC)
-
-all_HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
-print('number of words AFTER cleaning: ', len(all_HLwords))
-rough_avg_cleanWC = len(all_HLwords)/len(cleaned_headlines) # rough estimate of average word count from clean words divided by number of clean headlines
-write_file('all_HLwords', sorted(all_HLwords), 'strings')
-
-HLwords = sorted(list(set(all_HLwords)))
+print('number of words BEFORE cleaning): ', len(UC_HL_words))
+C_HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
+write_file('all_HLwords', sorted(C_HLwords), 'strings')
+print('number of words AFTER cleaning: ', len(C_HLwords))
+lower_all_HLwords = [word.lower() for word in C_HLwords]
+HLwords = sorted(set(lower_all_HLwords))
 write_file('HLwords', HLwords, 'strings')
 print('number of unique words: ', len(HLwords))
-
-char_length = [len(w) for w in HLwords] # list of CLs of SET OF ALL WORDS found in headlines
-print(average(char_length))
-lengths = [len(s) for s in all_HLwords] # list of CL from ALL WORDS in headlines
-write_file('char_length_data', sorted(lengths), 'strings')
-words_dist = nltk.FreqDist(all_HLwords)
+words_dist = nltk.FreqDist(lower_all_HLwords)
 print('10 most common words: ', sorted(words_dist.most_common(10)))
-lengths_dist = nltk.FreqDist(lengths)
+
+rough_avg_WC = len(UC_HL_words)/len(headlines) # rough estimate of average word count from all words divided by number of headlines
+print('rough average word count per UNCLEAN headline: ', rough_avg_WC)
+ucWC_data = [len(item[0]) for item in categorized_headlines] # list of word counts from UNCLEAN headlines 
+write_file('c_uncleanWC_data', ucWC_data, 'strings')
+UCcount_dist = nltk.FreqDist(ucWC_data)
+print('10 most common UNCLEAN WCs: ', UCcount_dist.most_common(10))
+rough_avg_cleanWC = len(C_HLwords)/len(cleaned_headlines) # rough estimate of average word count from clean words divided by number of clean headlines
+print('rough average word count per CLEAN headline: ', rough_avg_cleanWC)
+cWC_data = [len(item[0]) for item in cleaned_headlines] # list of word counts from CLEAN headlines
+write_file('cleanWC_data', cWC_data, 'strings')
+Ccount_dist = nltk.FreqDist(cWC_data)
+print('10 most common CLEAN WCs: ', Ccount_dist.most_common(10))
+
+char_length_set = [len(w) for w in HLwords] # list of CLs of SET OF ALL WORDS found in headlines
+print('average length of all UNIQUE words in headlines: ', average(char_length_set))
+CL_data = [len(s) for s in C_HLwords] # list of CLs from ALL WORDS in headlines
+write_file('CL_data', CL_data, 'strings')
+print('average length of ALL WORDS in headlines: ', average(CL_data))
+lengths_dist = nltk.FreqDist(CL_data)
 print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
                 
 ### REGEX 

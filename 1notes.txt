@@ -1,17 +1,29 @@
-LONGEST WORD: 30 characters — Selenofriggatriskaidekaphobics
+STATS:
+- number of raw headlines: 209,518
+- TOTAL number of entries: 209,518 entries
+- number of USEABLE entries: 208,085 entries
+
+- number of words BEFORE cleaning (total word count): 2,033,105 words
+- number of words AFTER cleaning (cleaned word count): 1,343,496 words
+- number of UNIQUE words: 57,116 words
+- 10 most common words: 
+
+# WC #
+- avg WC (w/UNCLEAN headlines): 9.703724739640508 words
+- 10 most common UNCLEAN WCs: (10 words, 27878), (11 words, 26689), (9 words, 25760), (12 words, 21954), (8 words, 21479), (7 words, 16727), (13 words, 15397), (6 words, 12894), (14 words, 9799), (5 words, 9015)
+
+- avg WC (w/CLEAN headlines): 6.412317796084346 words
+- 10 most common CLEAN WCs: (7 words, 32785), (8 words, 30479), (6 words, 30288), (5 words, 27140), (4 words, 22946), (9 words, 21795), (3 words, 15883), (10 words, 11535), (2 words, 7869), (11 words, 4885)
+
+
+# CL (calculations done with CLEAN ONLY) #
+- avg CL of UNIQUE words: 7.379333286644723
+- avg CL of ALL words: 5.97540818878508
+- 10 most common CLs: (2 letters, 15171), (3 letters, 110652), (4 letters, 247266), (5 letters, 260174), (6 letters, 226706), (7 letters, 188780), (8 letters, 127037), (9 letters, 77419), (10 letters, 46200), (11 letters, 23529)
+
+# OTHER INFO #
+- longest word: 30 characters — Selenofriggatriskaidekaphobics
 NUMBER OF UNIQUE WORDS AFTER CLEANING: 59476
-AVG CHARA LENGTH: 7.309853178307732
-MOST COMMON CHARA LENGTHS:
-(3, 107231)
-(4, 245665)
-(5, 258951)
-(6, 225651)
-(7, 187889)
-(8, 126376)
-(9, 76963)
-(10, 45944)
-(11, 23395)
-(12, 11634)
 
 - for CL — need to use SEARCH to find all CLEAN with WC > 2
 - WORD COUNT is found from ALL ITEMS in headlines, including numbers and single letters (i.e., 'a', 'I', etc.)

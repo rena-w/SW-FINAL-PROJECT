@@ -12,10 +12,25 @@
 ## Data
 *Overview of the data you've used for this project. This should be pretty close to your data statement milestone. This is also where to provide summary statistics of the data.*
 
-#### Cleaning data
+The corpus I used for this project was created by 
 
 At the start, I had 209,518 entries in my dataset. I went through and manually removed those that were blank, had no category, or were unusable for various reasons. I then 
 
+|Category|# of articles|
+| -------- | ------- |
+|POLITICS|35600|
+|HEALTH & WELLNESS|24639|
+|ENTERTAINMENT & MEDIA|20305|
+|PARENTING|12746|
+|STYLE & BEAUTY|12068|
+|TRAVEL|9900|
+|WORLD NEWS|9541|
+|FOOD & DRINK|8436|
+|BUSINESS & ECONOMY|7747|
+|QUEER VOICES|6346|
+
+## Methodology 
+*This is one of the most important sections. A scientific paper should provide enough information that another scientist would be able to replicate the results. You don't have to cover every single detail of how your code is implemented, etc, but you should minimally describe any processing you apply to the data, as well as the specific statistical tests you use. This section should also formalize your hypotheses. If you decide to create a Github repository (see extra-credit section), you may cite portions of the code where appropriate.*
 
 #### Data table
 The variables of interest are: 
@@ -39,22 +54,6 @@ The variables of interest are:
 My tabled data is divided into six columns. Each entry contains the category of the article, followed by the original & cleaned versions of the headline, WC, and CL. 
 
 The creators of the corpus had 41 categories in the original dataset. To cut down on the number of groups, I combined labels that seemed to be for the same type of content (i.e., "ARTS", "ARTS & CULTURE", and "CULTURE & ARTS") into one category, ending up with 30 categories. The top 10 most common are listed below, along with the number of articles that belong to each category. The full list of categories and their respective counts can be found in [categories.txt](https://github.com/rena-w/SW-FINAL-PROJECT/blob/main/categories.txt)!
-
-|Category|# of articles|
-| -------- | ------- |
-|POLITICS|35600|
-|HEALTH & WELLNESS|24639|
-|ENTERTAINMENT & MEDIA|20305|
-|PARENTING|12746|
-|STYLE & BEAUTY|12068|
-|TRAVEL|9900|
-|WORLD NEWS|9541|
-|FOOD & DRINK|8436|
-|BUSINESS & ECONOMY|7747|
-|QUEER VOICES|6346|
-
-## Methodology 
-*This is one of the most important sections. A scientific paper should provide enough information that another scientist would be able to replicate the results. You don't have to cover every single detail of how your code is implemented, etc, but you should minimally describe any processing you apply to the data, as well as the specific statistical tests you use. This section should also formalize your hypotheses. If you decide to create a Github repository (see extra-credit section), you may cite portions of the code where appropriate.*
 
 #### **Cleaning the data**
 
@@ -97,3 +96,6 @@ The statistical test I used for this part of the project was a one-way ANOVA tes
 
 ## Conclusion
 *This can be fairly short. Briefly re-state the high-level takeaways from your project, as well as a few ideas of how the research direction could be continued/improved in future work.*
+
+#### **Potential sources of error / things that could be improved**
+- 
