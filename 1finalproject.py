@@ -408,72 +408,72 @@ def search(entries_paired): # data search function — can look for particular w
 
 ### RAW DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
-write_file('RAW_DATA', raw_data, 'strings')
+#write_file('RAW_DATA', raw_data, 'strings')
 headlines = find_type(raw_data, '$B') # only the headlines, split into individual words — doesn't have punctuation but DOES have hashtags
-print('number of raw headlines TOTAL: ', len(headlines))
+#print('number of raw headlines TOTAL: ', len(headlines))
 
 ### CATEGORIES ###
 categories_all = find_type(raw_data, '$C', split=False)
 cat_dist = nltk.FreqDist(categories_all)
 cat_list = sorted(cat_dist.most_common(10), key=lambda x: x[1], reverse=True)
 category_counts = sorted(cat_dist.most_common(30))
-write_file('category_counts', category_counts, 'strings')
+#write_file('category_counts', category_counts, 'strings')
 categories = sorted(set(categories_all))
 
 ### PAIRS ###
 categorized_headlines = make_pair(raw_data, '$B', '$C') #### USE THIS TO MAKE ENTRIES ####
 written_catHLs = [(' '.join(entry[0]), entry[1]) for entry in categorized_headlines]
-write_file('categorized_headlines', written_catHLs, 'strings')
+#write_file('categorized_headlines', written_catHLs, 'strings')
 cleaned_headlines = [clean(h) for h in categorized_headlines]
 written_cleanedHLs = [(' '.join(entry[0]), entry[1]) for entry in cleaned_headlines]
-write_file('cleaned_headlines', written_cleanedHLs, 'strings')
+#write_file('cleaned_headlines', written_cleanedHLs, 'strings')
 
 ### ENTRIES ###
 full_entry = make_entry(categorized_headlines) # ORIG / CLEAN COMBINED ENTRIES 
-write_file('full_entries', full_entry, 'strings')
+#write_file('full_entries', full_entry, 'strings')
 print('making CLEAN entries!!!')
 entries = make_entry(categorized_headlines, both=False) # USEABLE ENTRIES
-write_file('entries', entries, 'strings')
-print('number of USEABLE entries: ', len(entries))
+#write_file('entries', entries, 'strings')
+#print('number of USEABLE entries: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
 
 print('TEST: making UNCLEAN ENTRIES')
 unclean_entries = make_entry(categorized_headlines, both=False)
-print('total number of entries: ', len(unclean_entries))
+#print('total number of entries: ', len(unclean_entries))
 
 ### WORDS / DATA & NUMBERS ###
 UC_HL_words = combine(headlines) # all words in headlines
-print('number of words BEFORE cleaning): ', len(UC_HL_words))
+#print('number of words BEFORE cleaning): ', len(UC_HL_words))
 C_HLwords = clean(UC_HL_words, paired=False) # list of words remaining AFTER CLEAN
-write_file('all_HLwords', sorted(C_HLwords), 'strings')
-print('number of words AFTER cleaning: ', len(C_HLwords))
+#write_file('all_HLwords', sorted(C_HLwords), 'strings')
+#print('number of words AFTER cleaning: ', len(C_HLwords))
 lower_all_HLwords = [word.lower() for word in C_HLwords]
 HLwords = sorted(set(lower_all_HLwords))
-write_file('HLwords', HLwords, 'strings')
-print('number of unique words: ', len(HLwords))
+#write_file('HLwords', HLwords, 'strings')
+#print('number of unique words: ', len(HLwords))
 words_dist = nltk.FreqDist(lower_all_HLwords)
-print('10 most common words: ', sorted(words_dist.most_common(10)))
+#print('10 most common words: ', sorted(words_dist.most_common(10)))
 
 rough_avg_WC = len(UC_HL_words)/len(headlines) # rough estimate of average word count from all words divided by number of headlines
-print('rough average word count per UNCLEAN headline: ', rough_avg_WC)
+#print('rough average word count per UNCLEAN headline: ', rough_avg_WC)
 ucWC_data = [len(item[0]) for item in categorized_headlines] # list of word counts from UNCLEAN headlines 
-write_file('c_uncleanWC_data', ucWC_data, 'strings')
+#write_file('c_uncleanWC_data', ucWC_data, 'strings')
 UCcount_dist = nltk.FreqDist(ucWC_data)
-print('10 most common UNCLEAN WCs: ', UCcount_dist.most_common(10))
+#print('10 most common UNCLEAN WCs: ', UCcount_dist.most_common(10))
 rough_avg_cleanWC = len(C_HLwords)/len(cleaned_headlines) # rough estimate of average word count from clean words divided by number of clean headlines
-print('rough average word count per CLEAN headline: ', rough_avg_cleanWC)
+#print('rough average word count per CLEAN headline: ', rough_avg_cleanWC)
 cWC_data = [len(item[0]) for item in cleaned_headlines] # list of word counts from CLEAN headlines
-write_file('cleanWC_data', cWC_data, 'strings')
+#write_file('cleanWC_data', cWC_data, 'strings')
 Ccount_dist = nltk.FreqDist(cWC_data)
-print('10 most common CLEAN WCs: ', Ccount_dist.most_common(10))
+#print('10 most common CLEAN WCs: ', Ccount_dist.most_common(10))
 
 char_length_set = [len(w) for w in HLwords] # list of CLs of SET OF ALL WORDS found in headlines
-print('average length of all UNIQUE words in headlines: ', average(char_length_set))
+#print('average length of all UNIQUE words in headlines: ', average(char_length_set))
 CL_data = [len(s) for s in C_HLwords] # list of CLs from ALL WORDS in headlines
 write_file('CL_data', CL_data, 'strings')
-print('average length of ALL WORDS in headlines: ', average(CL_data))
+#print('average length of ALL WORDS in headlines: ', average(CL_data))
 lengths_dist = nltk.FreqDist(CL_data)
-print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
+#print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
                 
 ### REGEX 
 # for removing parentheses and apostrophes: \('|\)$|']
