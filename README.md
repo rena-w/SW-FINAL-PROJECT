@@ -369,8 +369,6 @@ However, other proper nouns that were causing some concern and curiosity were pl
 Finally, I mentioned wanting to try POS-tagging if I had the time, and unfortunately I didn't have the opportunity to do any analysis of parts of speech or lexical categories. If I had access to these labels during my data analysis, it may have helped me clean the data a bit easier and ease my concerns about the interference of proper nouns. 
 
 # CONCLUSION
-*This can be fairly short. Briefly re-state the high-level takeaways from your project, as well as a few ideas of how the research direction could be continued/improved in future work.*
-
 During this project, I'd hoped to explore several aspects of this topic, which is reflected in the questions I've asked, but most of all I wanted to do cross-category comparisons. The biggest conclusions I would draw from my analysis is that there is strong variability of average word length between different genres of journalism; that result was statistically very strong and provides a good base to form deeper research questions. 
 
 The clear main question I can see directly stemming from the results of this project is looking into the relationship between word count and character length, as I've emphasized many times in my writing. Another good research topic would be the location of long words within each headline; whether they tend to appear at the beginning, middle, or end of headlines. This topic can then be expanded to consider the role of word count and subject matter of the article, to name a few other interesting variables.
