@@ -24,7 +24,7 @@ News headlines are meant to be eye-catching — they must convey a lot of inform
 ---
 ---
 
-# Data
+# DATA
 The corpus I used for this project was created by Rishabh Misra and Jigyasa Grover. Consisting of 210,294 entries, the main part of the data is the collection of news article headlines, but the corpus also contains information about the author(s) of the article, the publication date, and the category under which the article falls. Each entry also provides the links to the articles, as well as a short description of the content of each article. 
 
 This corpus was compiled between the years of 2012 and 2022 (though the vast majority of the data were collected in 2012 to 2018) from Huffpost’s archiving feature, so all the articles were written by Huffpost authors. 
@@ -124,7 +124,7 @@ Some fun statistics I found along the way:
 ---
 ---
 
-# Methodology 
+# METHODOLOGY 
 *This is one of the most important sections. A scientific paper should provide enough information that another scientist would be able to replicate the results. You don't have to cover every single detail of how your code is implemented, etc, but you should minimally describe any processing you apply to the data, as well as the specific statistical tests you use. This section should also formalize your hypotheses. If you decide to create a Github repository (see extra-credit section), you may cite portions of the code where appropriate.*
 
 In this section, I will cover the process of cleaning the data, processing it, and my reasoning for each decision. I will also briefly describe the code used to format, organize, and sort the data for usage. Finally, I will discuss the different statistical tests I used and the purpose of each test. 
@@ -132,28 +132,9 @@ In this section, I will cover the process of cleaning the data, processing it, a
 Unfortunately, something was wrong with the formatting of the original data, so I had to convert it into text and reformat the dataset before I could do anything else. Each entry was already on its own line, so the initial challenge was separating the items within each individual entry. I also had to make sure they were all in the same order, since the original dataset seemed to be inconsistent with the order of their variables. I really underestimated the amount of issues I would run into as I continued to work with the headlines — especially because I just had so much of them to account for — so the code I wrote kept getting longer and more complicated.
 
 ### **Working with the text**
-Once I got the entries separated, my focus then turned to the lexical content of each headline. 
+Once I got the entries separated, my focus then turned to the lexical content of each headline. The other variables were less important — for example, other than the recategorization I mentioned earlier, the `category` column didn't need to be changed very much. 
 
-**Items I removed and why they were problematic:**
-1. **Punctuation** and other **non-alphanumeric characters**
-
-    This includes things like commas, periods, ellipses, apostrophes, and any other character that isn't an alphabetic letter. These would have interfered with the counting of CL, incorrectly yielding a higher count.
-
-2. hashtags
-    
-    Although hashtags are often made up of several words in sequence, since there are deliberately no spaces used, it is meant to be read and treated as one single word (+=1 in word count). but ignored for character count, Like punctuation, these items would result in an incorrect CL.
-3. Items that consisted of only numeric digits
-    
-    when counting words, the input was the entire entry. I first replaced all instances of digits
-
-**Category** — the genre of news for each article
-- Other than the recategorization I mentioned earlier, this column didn't need to be changed very much. 
-
-**Word count** (WC) — the number of items* in a headline. 
-
-- The code used in the function `findWC` was basically `wc = len(headline)`, just phrased in a way that allowed for different types of inputs to be processed successfully.
-
-**Character length** (CL) - the average length (in alphabetic characters) of a word in a headline. 
+Predictably, getting an accurate measure of CL was what drove the vast majority of these changes. My plan for character length was to calculate it by counting the number of alphabetic characters in each word, then finding the overall average of all the words in the entire headline. This would then repeat for every entry. The function `findCL()`, the partner to `findWC()`, used `len()` at first, but in order to safeguard against any symbols or non-alphabetic letters that my `clean()` function failed to catch, was altered to use repeated list iterations instead.
 
     for word in headline:
         count = 0
@@ -163,62 +144,116 @@ Once I got the entries separated, my focus then turned to the lexical content of
             entry_count.append(count)
         avg = average(entry_count)
 
-Initially, the word count was simply the number of words in each headline. However, if you look at news headlines, you will find that numbers or values are never written out as words. Hashtags such as #MeToo or #BlackLivesMatter were also common occurrences, so I had to work around these non-standard items without impacting the rest of the structure of each title, or risking a skewed dataset if I removed too much of any headline.
+**Items I removed and why they were problematic:**
+1. **Punctuation** and other **non-alphanumeric characters**
 
-My plan for character length was to calculate it by counting the number of alphabetic characters in each word, then finding the overall average of all the words in the entire headline. This would then repeat for every entry. 
+    This includes things like commas, periods, ellipses, apostrophes, and any other character that isn't an alphabetic letter. These would have interfered with the counting of CL, incorrectly yielding a higher count. 
+    
+    The function `get_lines()` retrieves data from an original *.txt* data file and iterates through its contents to return a list of all entries without unwanted characters. Punctuation, other symbols, and unicode were removed in the first step of the whole process using RegEx patterns to identify and replace them.
 
-#### **WC vs. CL**
-- numbers are counted as their own words, but 
+2. **Hashtags**
 
+    Hashtags such as #MeToo or #BlackLivesMatter were also common occurrences. Although hashtags are often made up of several words in sequence, since there are deliberately no spaces used, it is meant to be read and treated as one single word (+=1 in word count). Like punctuation, these items would result in an incorrect CL. This comes at the risk of having a lower WC. 
+    
+    I really wanted to try and keep them in the data, so I attempted to work around them at first. Even though they aren't technically *words*, they do still convey a lot of information. I was also concerned that removing hashtags would change the structure of shorter headlines (WC-wise) too much. Although I had some ideas and I tried a few already, it turned out to be harder to keep the hashtags than to take them out. 
+
+3. Items that consisted of only **numeric digits**
+    
+    To find the number of words in each headline, the first version of the `findWC()` function used the construction `wc = len(headline)`, just phrased in a way that allowed for different types of inputs to be processed successfully. `findWC()` returned a single value: a count of all the items within a list. 
+    
+    However, if you look at news headlines, you will find that numbers or values are never written out as words, but these items will be counted as words regardless. This would affect both the WC and the CL values, meaning that the easiest solution was to just remove them.
 
 ---
 
 ## **Testing**
-I conducted my statistical testing in two parts:
+To address the guiding questions I had for this project I conducted my statistical testing in two parts:
 
-**Part 1:** comparing each category (between samples)
+**Part 1**: tests comparing **each category** (between samples).
 
-**Part 2:** comparing between a standard and samples
-
+**Part 2**: tests comparing between **the standard** (made from population data) and **sample data** (from each category).
 
 ### Part 1: ANOVA & POST-HOC
+The independent variable for this part was `category`. The samples from each category were guaranteed to be independent — each article can only be assigned to one category. Although I did do follow-up testing with Welch's ANOVA just to double-check, it probably wasn't necessary.
+
 #### ANOVA
 
-With ANOVA, the aim was to look at the average character lengths of each category in comparison to each other. The one-way ANOVA was conducted using `formula = CL ~ CATEGORY`, so there were 30 levels of the independent variable corresponding to the 30 different categories. 
+With ANOVA, the aim was to look at the average character lengths of each category in comparison to each other. The one-way ANOVA was conducted using `formula = CL ~ CATEGORY`, with `category` as the distributing variable. There were 30 levels of the independent variable corresponding to the 30 different categories, which was a lot of groups. The number of levels made it pretty difficult to conduct analysis between specific groups, even when the number of groups was lowered.
 
 **Null hypothesis:** the average word length in characters is the same across all 30 categories of news articles.
 
+H0: `average_CL('POLITICS') = average_CL('ENTERTAINMENT & MEDIA') = average_CL('ENVIRONMENT') = ... = average_CL('PARENTING')`
+
 **Alternative hypothesis:** the average word length in characters is not the same across all 30 categories; at least one category average is significantly different.
 
-#### Post-hoc tests
-For post-hoc testing, my first instinct was to use many Student's t-tests. However, since I am testing the means of 10 different samples against each other, there would be a very high chance of a false positive. So, the post-hoc test method I used for this project is Tukey's test, which is specifically designed to be a follow-up to ANOVA. 
+HA: `*NOT*(average_CL('POLITICS') = average_CL('ENTERTAINMENT & MEDIA') = average_CL('ENVIRONMENT') = ... = average_CL('PARENTING'))`
 
-**Null hypotheses:**
-**Alternative hypotheses:**
+#### Post-hoc tests
+For post-hoc testing, my first instinct was to use many Student's t-tests. However, as mentioned above, there are many, many levels. False positives are essentially guaranteed, even if I lowered the number of tests to 10 different samples against each other. I did manually conduct individual t-tests with the top 10 categories, but like I said, the results are likely not accurate. 
+
+The post-hoc test method I decided to use for this project is Tukey's test, which is specifically designed to be a follow-up to ANOVA. It compares the means of every possible combination of two groups while accomodating for any familywise errors. With 30 levels, that would mean a ridiculous number of comparisons (1,073,741,823), but it also means that a test like Tukey's test is the only option, since a t-test would result in an unimaginable amount of false positives. I conducted my Tukey test with the top 10 categories.
+
+**Null hypothesis:** There is no significant difference between any of the groups; all the means are equal.
+
+H0: `average_CL('POLITICS') = average_CL('ENTERTAINMENT & MEDIA') = average_CL('ENVIRONMENT') = ... = average_CL('PARENTING')`
+
+**Alternative hypotheses:** For all combinations, the alternative hypothesis is that the means of the two groups being compared is significantly different.
+
+HA: `average_CL('POLITICS') - average_CL('ENTERTAINMENT & MEDIA') != 0` (for example)
 
 ### Part 2: Comparison with a standard
-Earlier in my planning process for this project, I wanted to look at the data from news headlines in comparison to other forms of prose. However, it ultimately was too wide of a scope and a little too ambitious for the scale of this project. I still wanted to do similar testing, so I decided to stay within-genre and compare a population standard to the samples.
+Earlier in my planning process for this project, I wanted to look at the data from news headlines in comparison to other forms of prose. However, it ultimately was too wide of a scope and a little too ambitious for the scale of this project. I still wanted to do similar testing, so I decided to stay within-genre and compare a population standard to the samples. 
 
-#### Finding the standard
+The first group of tests compare the sample averages to a population average — these are one-sample t-tests. The second tests assess if the probability of a particular outcome is equal to the population probability across all categories, or chi-square goodness-of-fit tests. 
 
-##### Determining outliers
-- formula = Q1 - 3\*IQR, Q3 - 3\*IQR 
-    - the increased threshold for outliers is due to the very small IQR found from the data
+#### Defining the standard
+There are two groups of words that were collected from the cleaned headlines: the *set* of **UNIQUE** words and the *list* of **ALL** words. As reported by the summary statistics above, there are 1,343,496 total words and 57,116 unique words in this dataset. The average CL calculated from each of those groups is significantly different: the average CL of unique words is 7.379 letters, and the average CL of all words is nearly 1.5 characters shorter, at 5.975 letters. 
 
-Rough average word count per CLEAN headline: 6.351774071917449
+I chose to define the population standard using the list of **all** words, referred to from now on as `all_words`, since it clearly is the better demonstration of the distribution of word lengths across the entire population. Therefore, for Part 2 of testing, the established standard is **an average CL of 5.975 letters**.
 
-# Results
+The five number summary of `all_words` is as follows:
+**MIN** 2 **Q1** 4 **MED** 6 **Q3** 7 **MAX** 30
+with an IQR of 3. Using the typical formula of 1.5\*IQR, that puts the upper and lower bounds at 11.5 and -0.5 letters respectively. Since we are only interested in long words, the upper bound is the relevant value. Finally, we arrive at the section where the words 'Long Word' appear — the calculated upper bound of the population CL gives us our definition. A 'long word', therefore, is **any word that has a CL > 11**. With these population values set, we now move on to explaining the tests.
+
+#### Sample average vs. population average — one-sample t-testing
+Using a one-sample t-test to compare each category against the population standard is the simplest way to do so. Unlike the previous part, however, since we are still using only the top 10 categories as our samples, there are only 10 tests to conduct.  
+
+**Null hypothesis:** for all 10 t-tests, the null hypothesis states that the average CL is equal to the population average of 5.975.
+
+H0: `average_CL('POLITICS') = average_CL(population)`
+
+**Alternative hypothesis:** for all 10 t-tests, the alternative is a two tailed 'not equal' prediction, since we have no information about which way a test will go. That gives us information about *if* there's a difference or not, but not any information about which way it goes.
+
+HA: `'average_CL('POLITICS') != average_CL(population)`
+
+If we have a test yielding a p-value that allows us to reject the null hypothesis, we can then conduct a second t-test, where the alternative hypothesis is that the sample mean is either greater than or lesser than the population mean. 
+
+HA 2.0: `'average_CL('POLITICS') > average_CL(population)`
+    OR
+     `'average_CL('POLITICS') < average_C(population)`
+
+#### Testing goodness-of-fit
+In order to see if the standards of long words are equal across the board, I chose to use the chi-square goodness-of-fit test to compare the distributions of the population to each category's sample. 
+
+**Null hypothesis:**
+**Alternative hypothesis:**
+
+# RESULTS
 *A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*
 
 ## Part 1 results
+### ANOVA 
+
+### Tukey's Test
+
 
 ## Part 2 results
 
-# Analysis
+
+# ANALYSIS
 *This is where you can go into more detail about what the results mean, and what significance they hold in relation to the subject area and the question you set out to answer.*
 
 ### **Potential sources of error / things that could be improved**
 During the cleaning process, there were many different items that I felt I needed to account for. One of these seemed particularly pressing: names. Because of the nature of news articles, proper nouns are much more likely to appear. In fact, the words 'Trump' and 'Donald' are #1 and #3 in the top 10 most common words, with 10,585 and 4,835 instances respectively. Although it could just be reflective of when these headlines were written, it still seems reasonable to assume that the appearance of proper nouns is influencing the average word count and character lengths. 
 
-# Conclusion
+# CONCLUSION
 *This can be fairly short. Briefly re-state the high-level takeaways from your project, as well as a few ideas of how the research direction could be continued/improved in future work.*
