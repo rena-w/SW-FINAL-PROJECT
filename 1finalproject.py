@@ -450,7 +450,7 @@ HLwords = sorted(set(lower_all_HLwords))
 #write_file('HLwords', HLwords, 'strings')
 #print('number of unique words: ', len(HLwords))
 words_dist = nltk.FreqDist(lower_all_HLwords)
-#print('10 most common words: ', sorted(words_dist.most_common(10)))
+#print('10 most common words: ', sorted(words_dist.most_common(10), key=lambda x:x[1], reverse=True))
 
 rough_avg_WC = len(UC_HL_words)/len(headlines) # rough estimate of average word count from all words divided by number of headlines
 #print('rough average word count per UNCLEAN headline: ', rough_avg_WC)
@@ -471,10 +471,10 @@ CL_data = [len(s) for s in C_HLwords] # list of CLs from ALL WORDS in headlines
 #write_file('CL_data', CL_data, 'strings')
 #print('average length of ALL WORDS in headlines: ', average(CL_data))
 lengths_dist = nltk.FreqDist(CL_data)
-#print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
+print('10 most common lengths: ', sorted(lengths_dist.most_common(10), key=lambda x: x[1], reverse=True))
 
 
-search(entries)
+#search(entries)
 
 
 
