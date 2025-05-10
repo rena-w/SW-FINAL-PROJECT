@@ -249,7 +249,7 @@ HA 2.0: `'average_CL('POLITICS') > average_CL(population)`
 **Code used for testing:** `t.test(x=pol_cl, mu=5.975, alternative="two.sided")`
 
 #### Testing goodness-of-fit
-In order to see if the standards of long words are equal across the board, I chose to use the chi-square goodness-of-fit test to compare the distributions of the population to each category's sample. Because CL is a quantitative variable, I converted it into a categorical one by binning the data in R: `pop_CL$len <- cut(pop_CL$V1, breaks=c(0.5, 4, 11, Inf), labels=c('short', 'med', 'long'))`. 
+In order to see if the standards of long words are equal across the board, I chose to use the chi-square goodness-of-fit test to compare the distributions of the population to each category's sample. Because CL is a quantitative variable, I converted it into a categorical one by binning the data in R: `pop_CL$len <- cut(pop_CL$V1, breaks=c(0.5, 4, 11, Inf), labels=c('short', 'med', 'long'))`. This gave me the expected proportions of: 27.7% short words, 70.7% medium words, and 1.5% long words.
 
 **Null hypothesis:** for each chi-square test, the frequency distribution of CLs of each category is the same as that of the population. In otherwords, CLs occur in the same proportions in both the population and the sample.
 
@@ -259,25 +259,68 @@ H0: `proportion(words(population)) = proportion(words(insert_category))`
 
 HA: `proportion(words(population)) != proportion(words(insert_category))`
 
-**Code used for testing:** 
+**Code used for testing:** `chisq.test(expected_proportions, sample_proportions)`
 
 # RESULTS
 *A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*
 
 ## Part 1 results
+For all tests, I used the typical significance level of 0.05.
+
 ### ANOVA 
+
+Using `formula = CL ~ CATEGORY`, the results of ANOVA are statistically significant. 
+F-value: 162.6
+p-value: 0.0000000000000002
+Since p-value is much smaller than our significance level of 0.05, we **reject** the null hypothesis and conclude that there is significant evidence to suggest that average word length in characters is not the same across all 30 categories.
 
 ### Tukey's Test
 
+I performed Tukey's Test as a response to the statistically significant results of ANOVA using `post_test <- TukeyHSD(topten_aov, conf.level = 0.95)`. This test compared the top 10 categories, with 45 unique pairings, looking to see if there was a significant difference between the means of each pair. 
+
+The [results of the test]() showed that the majority of comparisons were statistically significant: 
+
+- 37 out of 45 pairings had a **p-value of less than 0.05**. 
+
+The 8 pairings that had a **p-value greater than 0.05** are listed below, in order from largest p-value to smallest:
+|Category 1|Category 2|p-value|
+|:---|:---|:---|
+|PARENTING|ENTERTAINMENT & MEDIA|0.9966326|
+|FOOD & DRINK|ENTERTAINMENT & MEDIA|0.9872468|
+|TRAVEL|HEALTH & WELLNESS|0.9757120|
+|POLITICS|BUSINESS & ECONOMY|0.9560016|
+|PARENTING|FOOD & DRINK|0.7901254|
+|QUEER VOICES|FOOD & DRINK|0.7172272|
+|STYLE & BEAUTY|PARENTING|0.1024857|
+|QUEER VOICES|ENTERTAINMENT & MEDIA|0.0644390|
 
 ## Part 2 results
 ### One-Sample t-tests
+Each t-test was conducted using the same three lines of code: 
+1. `t.test(x=insert_category_CL, mu=5.975, alternative="two.sided")` — this two-sided test returned whether or not the sample mean was equal to the population mean of **5.975**.
+2. `t.test(x=polcl, mu=5.975, alternative="greater")` — the right-tailed test was conducted first, though there was no reason for that.
+3. `t.test(x=polcl, mu=5.975, alternative="less")` — by the end of the third test, the results would show if the comparison was statistically significant or not.
+
+The results of the two-sided tests on the top 10 categories confirmed the results of ANOVA, giving significant evidence: the sample means were not equal to the population mean. Further testing with right- and left-tailed tests showed that there was a 50/50 split: 5 categories had an **average CL that was greater than the population mean** and 5 categories had an **average CL that was less than the population mean**. 
+- They are listed here:
+    
+    **GREATER**: POLITICS, HEALTH & WELLNESS, TRAVEL,  WORLD NEWS, BUSINESS & ECONOMY
+    
+    **LESS**: ENTERTAINMENT & MEDIA, PARENTING, STYLE & BEAUTY, FOOD & DRINK, QUEER VOICES
+
+Categories that were confirmed to be **greater** than the population mean had a **p-value of 1** for the left-tailed test and a **p-value of 0.0000000000000002** for the right-tailed test.
+
+With the exception of **QUEER VOICES**, which had a **p-value of 0.0000007369** for the left-tailed test, categories that were confirmed to be **less** than the population mean had a **p-value of 0.0000000000000002** for the left-tailed test and a **p-value of 1** for the right-tailed test.  
 
 ### Chi-Square Goodness-of-Fit
-If the tests fail to reject H0 for all 10 categories being tested, meaning that the proportions of short, medium, and long words is the same across the board, then that is statistical evidence that the genre of an article has no bearing on the amount of long words in its headline.
+Using the population proportions of 0.277, 0.707, and 0.015, each sample was compared to the expected proportions using `chisq.test(expected_prop, sample_prop)`. The [results]() of all 10 tests were insignificant, all yielding the same result.
+
+X-Squared = 6, *df* = 4, **p-value = 0.1991**
 
 # ANALYSIS
 *This is where you can go into more detail about what the results mean, and what significance they hold in relation to the subject area and the question you set out to answer.*
+
+If the tests fail to reject H0 for all 10 categories being tested, meaning that the proportions of short, medium, and long words is the same across the board, then that is statistical evidence that the genre of an article has no bearing on the amount of long words in its headline.
 
 ### **Potential sources of error / things that could be improved**
 During the cleaning process, there were many different items that I felt I needed to account for. One of these seemed particularly pressing: names. Because of the nature of news articles, proper nouns are much more likely to appear. In fact, the words 'Trump' and 'Donald' are #1 and #3 in the top 10 most common words, with 10,585 and 4,835 instances respectively. Although it could just be reflective of when these headlines were written, it still seems reasonable to assume that the appearance of proper nouns is influencing the average word count and character lengths. 
