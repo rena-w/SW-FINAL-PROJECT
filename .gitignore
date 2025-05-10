@@ -7,7 +7,7 @@ cleaned_headlines.txt
 cleanedWC_data.txt
 full_entries.txt
 HLwords.txt
-1notes.txt
+1notes*
 RAW_DATA.txt
 CL_data.txt
 
@@ -36,3 +36,4 @@ sports*
 style*
 category_data
 top_10.txt
+untracked*
