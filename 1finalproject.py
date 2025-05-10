@@ -429,9 +429,9 @@ written_cleanedHLs = [(' '.join(entry[0]), entry[1]) for entry in cleaned_headli
 ### ENTRIES ###
 full_entry = make_entry(categorized_headlines) # ORIG / CLEAN COMBINED ENTRIES 
 #write_file('full_entries', full_entry, 'strings')
-#print('making CLEAN entries!!!')
+print('making CLEAN entries!!!')
 entries = make_entry(categorized_headlines, both=False) # USEABLE ENTRIES
-#write_file('entries', entries, 'strings')
+write_file('entries', entries, 'strings')
 #print('number of USEABLE entries: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
 
@@ -471,10 +471,12 @@ CL_data = [len(s) for s in C_HLwords] # list of CLs from ALL WORDS in headlines
 #write_file('CL_data', CL_data, 'strings')
 #print('average length of ALL WORDS in headlines: ', average(CL_data))
 lengths_dist = nltk.FreqDist(CL_data)
-print('10 most common lengths: ', sorted(lengths_dist.most_common(10), key=lambda x: x[1], reverse=True))
+#print('10 most common lengths: ', sorted(lengths_dist.most_common(10), key=lambda x: x[1], reverse=True))
 
 
-#search(entries)
+#for ct in category_counts: 
+    #print(f'!!!! {ct} SEARCH!!!!')
+    #search(entries)
 
 
 

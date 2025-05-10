@@ -1,5 +1,5 @@
 .DS_Store
-ALL_DATA.t*
+ALL_DATA.txt*
 all_HLwords.txt
 c_uncleanWC_data.txt
 cleanWC_data.txt
@@ -19,6 +19,7 @@ comedy*
 crime*
 divorce*
 education*
+entertainment*
 environment*
 food*
 good*
