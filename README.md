@@ -77,7 +77,22 @@ Rough average word count per CLEAN headline: 6.351774071917449
     - the increased threshold for outliers is due to the very small IQR found from the data
 
 #### **Testing**
-The statistical test I used for this part of the project was a one-way ANOVA test, with CATEGORY being the independent variable. 
+I conducted two stages of statistical testing: 
+1. one-way ANOVA
+2. post-hoc testing
+
+
+##### ANOVA
+The first test, the one-way ANOVA test, was conducted using formula = CL ~ CATEGORY. There were 30 levels of the independent variable. 
+
+Null hypothesis:
+
+Alternative hypothesis:
+
+
+
+##### Post-hoc tests
+For post-hoc testing, my first instinct was to use many Student's t-tests. However, since I am testing the means of 10 different samples against each other, there would be a very high chance of a false positive. So, the other post-hoc test method I used for this project is Tukey's test, which is specifically designed to be a follow-up to ANOVA. 
 
 #### **RESEARCH QUESTIONS**
 
