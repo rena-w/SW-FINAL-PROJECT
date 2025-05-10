@@ -363,7 +363,7 @@ def search(entries_paired): # data search function — can look for particular w
             answer = input('Y/N: ') 
             if f'{answer}'=='y':
                 filename = input('Enter .txt file name: ')
-                write_file(f'{filename}.txt', results, 'strings')
+                write_file(f'{filename}', results, 'strings')
                 return results
             if f'{answer}'=='n': 
                 print('Done :)')
@@ -404,8 +404,6 @@ def search(entries_paired): # data search function — can look for particular w
            results_g = result_finding(single_cl_search)
            return results_g
 
-#search_function = search(entries)
-
 ### RAW DATA ###
 raw_data = get_lines('/Users/rena/Desktop/COURSES/LING 250/FINAL PROJECT/ALL_DATA.txt')
 #write_file('RAW_DATA', raw_data, 'strings')
@@ -437,8 +435,8 @@ entries = make_entry(categorized_headlines, both=False) # USEABLE ENTRIES
 #print('number of USEABLE entries: ', len(entries))
 ## entries has: (category, original HL, cleaned HL, original WC, cleaned WC, original CL, cleaned CL)
 
-print('TEST: making UNCLEAN ENTRIES')
-unclean_entries = make_entry(categorized_headlines, both=False)
+#print('TEST: making UNCLEAN ENTRIES')
+#unclean_entries = make_entry(categorized_headlines, both=False)
 #print('total number of entries: ', len(unclean_entries))
 
 ### WORDS / DATA & NUMBERS ###
@@ -470,11 +468,25 @@ Ccount_dist = nltk.FreqDist(cWC_data)
 char_length_set = [len(w) for w in HLwords] # list of CLs of SET OF ALL WORDS found in headlines
 #print('average length of all UNIQUE words in headlines: ', average(char_length_set))
 CL_data = [len(s) for s in C_HLwords] # list of CLs from ALL WORDS in headlines
-write_file('CL_data', CL_data, 'strings')
+#write_file('CL_data', CL_data, 'strings')
 #print('average length of ALL WORDS in headlines: ', average(CL_data))
 lengths_dist = nltk.FreqDist(CL_data)
 #print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
                 
+for cat in categories:
+    print(f'{cat} data search!!!!')
+    f'{cat}_data'== search(entries)
+
+
+
+
+
+
+
+
+
+
+
 ### REGEX 
 # for removing parentheses and apostrophes: \('|\)$|']
 # for hashtags: #[0-9]*[A-Za-z]+[0-9a-zA-Z]+(?=\s)
