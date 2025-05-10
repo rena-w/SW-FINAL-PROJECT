@@ -125,10 +125,9 @@ Some fun statistics I found along the way:
 ---
 
 # METHODOLOGY 
-*This is one of the most important sections. A scientific paper should provide enough information that another scientist would be able to replicate the results. You don't have to cover every single detail of how your code is implemented, etc, but you should minimally describe any processing you apply to the data, as well as the specific statistical tests you use. This section should also formalize your hypotheses. If you decide to create a Github repository (see extra-credit section), you may cite portions of the code where appropriate.*
+In the first half of this section, I will cover the process of cleaning the data, processing it, and my reasoning for each decision. I will also briefly describe the code used to format, organize, and sort the data for usage. In the second half, I will discuss the different statistical tests I used and the purpose of each test and what it intends to find out about the data. 
 
-In this section, I will cover the process of cleaning the data, processing it, and my reasoning for each decision. I will also briefly describe the code used to format, organize, and sort the data for usage. Finally, I will discuss the different statistical tests I used and the purpose of each test. 
-
+## Part 1: Cleaning and sorting the data
 Unfortunately, something was wrong with the formatting of the original data, so I had to convert it into text and reformat the dataset before I could do anything else. Each entry was already on its own line, so the initial challenge was separating the items within each individual entry. I also had to make sure they were all in the same order, since the original dataset seemed to be inconsistent with the order of their variables. I really underestimated the amount of issues I would run into as I continued to work with the headlines — especially because I just had so much of them to account for — so the code I wrote kept getting longer and more complicated.
 
 ### **Working with the text**
@@ -162,21 +161,31 @@ Predictably, getting an accurate measure of CL was what drove the vast majority 
     To find the number of words in each headline, the first version of the `findWC()` function used the construction `wc = len(headline)`, just phrased in a way that allowed for different types of inputs to be processed successfully. `findWC()` returned a single value: a count of all the items within a list. 
     
     However, if you look at news headlines, you will find that numbers or values are never written out as words, but these items will be counted as words regardless. This would affect both the WC and the CL values, meaning that the easiest solution was to just remove them.
+4. **Stopwords**
+    Stopwords are used so often in English, and it was heavily skewing my data due to the frequency of them showing up. These are words like 'the', 'you', 'a', 'to', 'is', etc. Using the nltk module, I used list iteration to comb through every headline and remove the words that were in the list of English stopwords.
+
+For all of these changes, there is corresponding code in [1finalproject.py](). `clean()` is the function I wrote specifically to get rid of numbers and stopwords and `get_lines()`, the function I mentioned was the first step of the whole process every time I ran the script, was created to be responsible for getting rid of all abnormal non-alphanumeric characters. 
+
+### Working with the numbers
+However, once I had finished cleaning the headlines and the lexical data, I had to consider the conditions I'd need to set for my quantitative variables. Because this entire project relies on these values, especially the character length, I needed to ensure that the data in those columns were satisfactory as well. While the textual data did directly affect the numerical data, there were some oddities that looked fine on the lexical side, but proved to be troublesome in the numerical data. For example, there is an entry with the headline "From Here to There" in the category 'PARENTING'. I kept getting zeros when importing my CL data into R, and I couldn't figure out where they were coming from, since I couldn't find these zeros in the `categorized_headlines.txt` file or in any of my other data files. Eventually, I figured out the step where things were going wrong. The data was fine after going through `find_type()` and `make_pair()`, but once it went through `clean()` as part of the `make_entry()` step, the zeros appeared. The issue was I hadn't realized that there were quite a few entries where all the words were stopwords, and so that would return values of zero after all the items were removed. 
+
+To combat the issue of having 1s and zeros in my dataset, I first created a search function `search()` to help me easily locate all entries where WC or CL was greater than, less than, or equal to a particular value. However, I decided that simply changing `findWC()` and `findCL()` would be easier, and `search()` was repurposed and expanded so that I could use it to find specific words, categories, WCs, and CLs across both cleaned and uncleaned data. This proved very useful when I needed to access entries of specific categories quickly. 
+
+In summary, on the numbers side, I excluded all entries that ended up with a WC of less than 2, which effectively also made sure that all CLs of less than 2 would be removed as well. The smallest values that were used in my statistical analysis were WC=2, CL=2. My hope with these conditions was to minimize the pull of smaller numbers on the overall distributions, both population-wise and category-wise.
 
 ---
 
-## **Testing**
-To address the guiding questions I had for this project I conducted my statistical testing in two parts:
+## Part 2: **Testing**
+All of my statistic work was done with R, though the actual R script where I did my scratch work was not included in this repository (though it absolutely can be if requested!!). Under each test, I provide the code used to perform it, or an example if there were multiple tests, as is the case for several of them. To address the guiding questions I had for this project, I conducted my statistical testing for two specific questions:
 
-**Part 1**: tests comparing **each category** (between samples).
+1. tests comparing **each category** (between samples).
 
-**Part 2**: tests comparing between **the standard** (made from population data) and **sample data** (from each category).
+2. tests comparing between **the standard** (made from population data) and **sample data** (from each category).
 
-### Part 1: ANOVA & POST-HOC
+### Comparing categories: ANOVA & post-hoc followups
 The independent variable for this part was `category`. The samples from each category were guaranteed to be independent — each article can only be assigned to one category. Although I did do follow-up testing with Welch's ANOVA just to double-check, it probably wasn't necessary.
 
 #### ANOVA
-
 With ANOVA, the aim was to look at the average character lengths of each category in comparison to each other. The one-way ANOVA was conducted using `formula = CL ~ CATEGORY`, with `category` as the distributing variable. There were 30 levels of the independent variable corresponding to the 30 different categories, which was a lot of groups. The number of levels made it pretty difficult to conduct analysis between specific groups, even when the number of groups was lowered.
 
 **Null hypothesis:** the average word length in characters is the same across all 30 categories of news articles.
@@ -186,6 +195,8 @@ H0: `average_CL('POLITICS') = average_CL('ENTERTAINMENT & MEDIA') = average_CL('
 **Alternative hypothesis:** the average word length in characters is not the same across all 30 categories; at least one category average is significantly different.
 
 HA: `*NOT*(average_CL('POLITICS') = average_CL('ENTERTAINMENT & MEDIA') = average_CL('ENVIRONMENT') = ... = average_CL('PARENTING'))`
+
+**Code used for testing:** `cl_aov=aov(formula=cl~category, data=entries)`
 
 #### Post-hoc tests
 For post-hoc testing, my first instinct was to use many Student's t-tests. However, as mentioned above, there are many, many levels. False positives are essentially guaranteed, even if I lowered the number of tests to 10 different samples against each other. I did manually conduct individual t-tests with the top 10 categories, but like I said, the results are likely not accurate. 
@@ -200,10 +211,14 @@ H0: `average_CL('POLITICS') = average_CL('ENTERTAINMENT & MEDIA') = average_CL('
 
 HA: `average_CL('POLITICS') - average_CL('ENTERTAINMENT & MEDIA') != 0` (for example)
 
-### Part 2: Comparison with a standard
+**Code used for testing:** `post_test <- TukeyHSD(topten_aov, conf.level = 0.95)`
+
+---
+
+### Comparison with a standard: one-sample t-tests and chi-square tests
 Earlier in my planning process for this project, I wanted to look at the data from news headlines in comparison to other forms of prose. However, it ultimately was too wide of a scope and a little too ambitious for the scale of this project. I still wanted to do similar testing, so I decided to stay within-genre and compare a population standard to the samples. 
 
-The first group of tests compare the sample averages to a population average — these are one-sample t-tests. The second tests assess if the probability of a particular outcome is equal to the population probability across all categories, or chi-square goodness-of-fit tests. 
+The first group of tests compare the sample averages to a population average: these are the one-sample t-tests. The second tests assess if the probability of a particular outcome is equal to the population probability across all categories — chi-square goodness-of-fit tests. 
 
 #### Defining the standard
 There are two groups of words that were collected from the cleaned headlines: the *set* of **UNIQUE** words and the *list* of **ALL** words. As reported by the summary statistics above, there are 1,343,496 total words and 57,116 unique words in this dataset. The average CL calculated from each of those groups is significantly different: the average CL of unique words is 7.379 letters, and the average CL of all words is nearly 1.5 characters shorter, at 5.975 letters. 
@@ -212,7 +227,7 @@ I chose to define the population standard using the list of **all** words, refer
 
 The five number summary of `all_words` is as follows:
 **MIN** 2 **Q1** 4 **MED** 6 **Q3** 7 **MAX** 30
-with an IQR of 3. Using the typical formula of 1.5\*IQR, that puts the upper and lower bounds at 11.5 and -0.5 letters respectively. Since we are only interested in long words, the upper bound is the relevant value. Finally, we arrive at the section where the words 'Long Word' appear — the calculated upper bound of the population CL gives us our definition. A 'long word', therefore, is **any word that has a CL > 11**. With these population values set, we now move on to explaining the tests.
+with an IQR of 3. Using the typical formula of 1.5\*IQR, that puts the upper and lower bounds at 11 and -0.5 letters respectively. Since we are only interested in long words, the upper bound is the relevant value. Finally, we arrive at the section where the words 'Long Word' appear — the calculated upper bound of the population CL gives us our definition. A 'long word', therefore, is **any word that has a CL > 11**. With these population values set, we now move on to explaining the tests.
 
 #### Sample average vs. population average — one-sample t-testing
 Using a one-sample t-test to compare each category against the population standard is the simplest way to do so. Unlike the previous part, however, since we are still using only the top 10 categories as our samples, there are only 10 tests to conduct.  
@@ -231,11 +246,20 @@ HA 2.0: `'average_CL('POLITICS') > average_CL(population)`
     OR
      `'average_CL('POLITICS') < average_C(population)`
 
-#### Testing goodness-of-fit
-In order to see if the standards of long words are equal across the board, I chose to use the chi-square goodness-of-fit test to compare the distributions of the population to each category's sample. 
+**Code used for testing:** `t.test(x=pol_cl, mu=5.975, alternative="two.sided")`
 
-**Null hypothesis:**
-**Alternative hypothesis:**
+#### Testing goodness-of-fit
+In order to see if the standards of long words are equal across the board, I chose to use the chi-square goodness-of-fit test to compare the distributions of the population to each category's sample. Because CL is a quantitative variable, I converted it into a categorical one by binning the data in R: `pop_CL$len <- cut(pop_CL$V1, breaks=c(0.5, 4, 11, Inf), labels=c('short', 'med', 'long'))`. 
+
+**Null hypothesis:** for each chi-square test, the frequency distribution of CLs of each category is the same as that of the population. In otherwords, CLs occur in the same proportions in both the population and the sample.
+
+H0: `proportion(words(population)) = proportion(words(insert_category))`
+
+**Alternative hypothesis:** for each chi-square test, the proportions of CLs is not the same between the population distribution and the sample distribution. 
+
+HA: `proportion(words(population)) != proportion(words(insert_category))`
+
+**Code used for testing:** 
 
 # RESULTS
 *A practice I follow is to have a separate "results" and "analysis" section. For results, you should describe the outcomes of your statistical without any "editorializing". I.e. describe the results as objectively as possible, without saying what you think those results mean. This is where you should state p-values and other direct results of your statistical tests. This is also where you should say if the Null hypothesis is rejected or maintained.*
@@ -247,7 +271,10 @@ In order to see if the standards of long words are equal across the board, I cho
 
 
 ## Part 2 results
+### One-Sample t-tests
 
+### Chi-Square Goodness-of-Fit
+If the tests fail to reject H0 for all 10 categories being tested, meaning that the proportions of short, medium, and long words is the same across the board, then that is statistical evidence that the genre of an article has no bearing on the amount of long words in its headline.
 
 # ANALYSIS
 *This is where you can go into more detail about what the results mean, and what significance they hold in relation to the subject area and the question you set out to answer.*
