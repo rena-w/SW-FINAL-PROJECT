@@ -95,7 +95,7 @@ This is an entry from my final, *fully cleaned* dataset:
 The creators of the corpus had 41 categories in the original dataset. To cut down on the number of groups, I combined labels that seemed to be for the same type of content (i.e., "ARTS", "ARTS & CULTURE", and "CULTURE & ARTS") into one category, ending up with 30 categories. The top 10 categories are listed below, along with the number of articles that belong to each category. 
 
 |Category|# of articles|
-| -------- | ------- |
+|:--- | :--- |
 |POLITICS|35600|
 |HEALTH & WELLNESS|24639|
 |ENTERTAINMENT & MEDIA|20305|
