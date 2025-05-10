@@ -1,10 +1,10 @@
 # LING 250 — Final Project
 ###### *by Serena Wong*
 
-### Topic: word choice in news headlines, dependent on word length in characters
+### Topic: Word length in news headlines
 
-## In this repository:
-*Describe the contents of the repository.*
+#### In this repository:
+This repository contains the files I used for my final project: the original, untouched data, the data I ended up analysing, and the code I wrote that processed and cleaned my data. 
 
 ## Introduction
 *Motivate your project by introducing the subject matter, the question you want to answer, and the motivation for answering that question*

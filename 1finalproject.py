@@ -109,14 +109,14 @@ def write_file(file, list_data, format): # writes data to another file
             for tup in list_data:
                 for item in tup:
                     outfile.write(str(item[0]) + '\n')   
-            print('Successfully created file! -> 'f'{file}')
+            print('Successfully created file! -> 'f'{file}.txt')
         if f'{format}' == 'strings':
             for item in list_data:
                 outfile.write(str(item)+'\n')
-            print('Successfully created file! -> 'f'{file}') 
+            print('Successfully created file! -> 'f'{file}.txt') 
         if f'{format}' == 'single string':
             outfile.write(str(list_data))
-            print ('Successfully created file! -> 'f'{file}')   
+            print ('Successfully created file! -> 'f'{file}.txt')   
 
 def combine(list_of_lists): # combines lists into one list
     merged = []
@@ -429,7 +429,7 @@ written_cleanedHLs = [(' '.join(entry[0]), entry[1]) for entry in cleaned_headli
 ### ENTRIES ###
 full_entry = make_entry(categorized_headlines) # ORIG / CLEAN COMBINED ENTRIES 
 #write_file('full_entries', full_entry, 'strings')
-print('making CLEAN entries!!!')
+#print('making CLEAN entries!!!')
 entries = make_entry(categorized_headlines, both=False) # USEABLE ENTRIES
 #write_file('entries', entries, 'strings')
 #print('number of USEABLE entries: ', len(entries))
@@ -472,13 +472,9 @@ CL_data = [len(s) for s in C_HLwords] # list of CLs from ALL WORDS in headlines
 #print('average length of ALL WORDS in headlines: ', average(CL_data))
 lengths_dist = nltk.FreqDist(CL_data)
 #print('10 most common lengths: ', sorted(lengths_dist.most_common(10)))
-                
-for cat in categories:
-    print(f'{cat} data search!!!!')
-    f'{cat}_data'== search(entries)
 
 
-
+search(entries)
 
 
 
@@ -493,7 +489,7 @@ for cat in categories:
 # for any all caps terms in parentheses: \([A-Z]+\)
 # for numbers: (?<!\$|:)(?<=\s|^)[0-9]+(?=\s|,|:|\?)(?!:\d)
 
-##### EXTRA DATA #####
+# EXTRA DATA #
 links = find_type(raw_data, '$A')
 descriptions = find_type(raw_data, '$D')
 authors = find_type(raw_data, '$E')
