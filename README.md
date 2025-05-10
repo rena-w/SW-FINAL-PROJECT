@@ -65,12 +65,6 @@ In its raw form, my data had the same 6 columns as the original dataset. However
 
 **Character length** (CL) - the average length (in alphabetic characters) of a word in a headline. 
 
-This is an entry from my final, *fully cleaned* dataset:
-
-    ('US NEWS', 'Million Americans Roll Sleeves Omicron Targeted COVID Boosters', 8, 6.875)
-
-**Statistics, continued:**
-
 >Number of words **before cleaning** (total word count): 2,033,105 words
 
 >Number of words **after cleaning** (cleaned word count): 1,343,496 words  
@@ -111,17 +105,21 @@ The full list of categories and their respective counts can be found in [categor
 
 ---
 
-Below are some fun statistics I found along the way:
+This is an entry from my final, *fully cleaned* dataset as an example:
 
-**Top 10s** (in descending order):
+    ('US NEWS', 'Million Americans Roll Sleeves Omicron Targeted COVID Boosters', 8, 6.875)
 
->Most common **words**: 'Trump', 'new', 'Donald', 'says', 'day', 'best', 'Trumps'/'Trump's', 'make', 'one', 'us'/'U.S.'
+Some fun statistics I found along the way:
 
->Most common **WCs** (before cleaning): 10 words, 11 words, 9 words, 12 words, 8 words, 7 words, 13 words, 6 words, 14 words, 5 words
+>**Top 10s** (in descending order):
 
->Most common **WCs** (after cleaning): 7 words, 8 words, 6 words, 5 words, 4 words, 9 words, 3 words, 10 words, 2 words, 11 words
+Most common **words**: 'Trump', 'new', 'Donald', 'says', 'day', 'best', 'Trumps'/'Trump's', 'make', 'one', 'us'/'U.S.'
 
->Most common **CLs**: 5 letters, 4 letters, 6 letters, 7 letters, 8 letters, 3 letters, 9 letters, 10 letters, 11 letters, 2 letters
+Most common **WCs** (before cleaning): 10 words, 11 words, 9 words, 12 words, 8 words, 7 words, 13 words, 6 words, 14 words, 5 words
+
+Most common **WCs** (after cleaning): 7 words, 8 words, 6 words, 5 words, 4 words, 9 words, 3 words, 10 words, 2 words, 11 words
+
+Most common **CLs**: 5 letters, 4 letters, 6 letters, 7 letters, 8 letters, 3 letters, 9 letters, 10 letters, 11 letters, 2 letters
 
 **The longest word:** 'selenofriggatriskaidekaphobics' (30 letters, appears one time)
 
@@ -133,25 +131,23 @@ Below are some fun statistics I found along the way:
 
 In this section, I will cover the process of cleaning the data, processing it, and my reasoning for each decision. I will also discuss the different statistical tests I decided to use for the analytic part of this project. 
 
----
-## **The cleanup process!**
+## Cleaning the data
 
-Unfortunately, something was wrong with the formatting of the original data, so I had to convert it into text and reformat the dataset before I could do anything else. Each entry was already on its ownline, so the initial challenge was separating the items within each individual entry. I also had to make sure they were all in the same order, since the original dataset seemed to be inconsistent with the order of their variables. 
+Unfortunately, something was wrong with the formatting of the original data, so I had to convert it into text and reformat the dataset before I could do anything else. Each entry was already on its own line, so the initial challenge was separating the items within each individual entry. I also had to make sure they were all in the same order, since the original dataset seemed to be inconsistent with the order of their variables. 
 
-Once I got the entries separated, my focus then turned to the lexical content of each headline and if I needed to change anything. I really underestimated the amount of issues I would run into as I continued to work with the headlines — especially because I just had so much of them to account for — so the code I wrote kept getting longer and more complicated.
+Once I got the entries separated, my focus then turned to the lexical content of each headline. I really underestimated the amount of issues I would run into as I continued to work with the headlines — especially because I just had so much of them to account for — so the code I wrote kept getting longer and more complicated.
 
 ### **Working with the text**
 
 **Items I removed and why they were problematic:**
 1. **Punctuation** and other **non-alphanumeric characters**
+
+    This includes things like commas, periods, ellipses, apostrophes, and any other character that isn't an alphabetic letter. These would have interfered with the counting of character length and incorrectly report a higher length.
+
 2. hashtags — treated as one single word (+=1 in word count) but ignored for character count, since hashtags are often several words in sequence with no spaces
     - this results in an incorrect judgement — it would indicate that there are LWs in that entry when there aren't (false positive)
 3. Items that consisted of only numeric digits
     - when counting words, the input was the entire entry. I first replaced all instances of digits
-
-
-### Finding variables
-As described above, the dataset has four variables, with the first two (category and the headline itself) being categorical and the latter two (word count and character length) being quantitative.
 
 **Category** — the genre of news for each article
 - Other than the recategorization I mentioned earlier, this column didn't need to be changed very much. 
