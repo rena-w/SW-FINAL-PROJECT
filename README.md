@@ -7,7 +7,9 @@
 This repository contains the files I used for my final project: the original, untouched data, the data I ended up analysing, and the code I wrote that processed and cleaned my data. 
 
 ## Introduction
-*Motivate your project by introducing the subject matter, the question you want to answer, and the motivation for answering that question*
+News headlines are meant to be eye-catching — they must convey a lot of information in a very short span of time. By the time a reader has scanned an article's title, they need to know the main points of an entire article from a single line of words. Because these headlines need to be short, every single word matters. How much information does this word carry? Is there a better choice? With those questions in mind, I investigated another aspect that may have some bearing on how writers choose to title their articles: word length. 
+
+Longer words naturally take more time to read — 
 
 ## Data
 *Overview of the data you've used for this project. This should be pretty close to your data statement milestone. This is also where to provide summary statistics of the data.*
